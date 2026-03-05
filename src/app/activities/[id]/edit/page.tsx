@@ -34,7 +34,9 @@ export default async function EditActivityPage(props: {
     if (!activity) return notFound();
 
     // Bind ID to updateActivity
-    const updateActivityWithId = updateActivity.bind(null, activityId);
+    const updateActivityWithId = async (formData: FormData) => {
+        return await updateActivity(activityId, formData);
+    };
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 pb-10">

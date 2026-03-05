@@ -28,7 +28,7 @@ interface ActivityFormProps {
     classes: any[];
     bases: any[];
     initialData?: any;
-    action: (formData: FormData) => Promise<void>;
+    action: (formData: FormData) => Promise<any>;
 }
 
 export default function ActivityForm({ categories, classes, bases, initialData, action }: ActivityFormProps) {
