@@ -46,8 +46,8 @@ export default async function RootLayout({
       <body className={cn(inter.className, "bg-slate-50 text-slate-900 antialiased")}>
         <div className="flex min-h-screen">
           <Sidebar user={user} profile={profile} />
-          <main className="flex-1 min-w-0 pb-24 sm:pb-0 sm:pl-72">
-            <div className="max-w-7xl mx-auto">
+          <main className={cn("flex-1 min-w-0 pb-24 sm:pb-0", user && "sm:pl-72")}>
+            <div className="max-w-7xl mx-auto h-full">
               {children}
             </div>
           </main>
