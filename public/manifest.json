@@ -1,0 +1,16 @@
+{
+    "name": "newjurnalku",
+    "short_name": "newjurnalku",
+    "description": "Aplikasi pencatatan jurnal mengajar dan laporan kinerja guru.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#f59e0b",
+    "icons": [
+        {
+            "src": "/next.svg",
+            "sizes": "any",
+            "type": "image/svg+xml"
+        }
+    ]
+}
