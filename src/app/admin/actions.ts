@@ -127,12 +127,48 @@ export async function updateUserRole(id: string, role: string) {
 
 export async function deleteUser(id: string) {
     const adminSupabase = createAdminClient()
-    const { error } = await adminSupabase
-        .from('profiles')
-        .delete()
-        .eq('id', id)
 
-    if (error) throw new Error(error.message)
-    revalidatePath('/admin/users')
-    return { success: true }
+    try {
+        // 1. First delete related activities and their class associations
+        // Get all activities for this user
+        const { data: activities } = await adminSupabase
+            .from('activities')
+            .select('id')
+            .eq('user_id', id)
+
+        const activityIds = activities?.map(a => a.id) || []
+
+        // Delete from pivot table first
+        if (activityIds.length > 0) {
+            await adminSupabase
+                .from('activity_class_rooms')
+                .delete()
+                .in('activity_id', activityIds)
+        }
+
+        // Delete activities
+        await adminSupabase
+            .from('activities')
+            .delete()
+            .eq('user_id', id)
+
+        // 2. Delete from public.profiles
+        const { error: profileError } = await adminSupabase
+            .from('profiles')
+            .delete()
+            .eq('id', id)
+
+        if (profileError) throw profileError
+
+        // 3. Delete from Supabase Auth (auth.users)
+        const { error: authError } = await adminSupabase.auth.admin.deleteUser(id)
+
+        if (authError) throw authError
+
+        revalidatePath('/admin/users')
+        return { success: true }
+    } catch (error: any) {
+        console.error('Delete User Error:', error)
+        throw new Error(error.message || 'Gagal menghapus pengguna')
+    }
 }

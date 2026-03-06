@@ -269,7 +269,7 @@ export async function updateSettings(formData: FormData) {
     if (!user) throw new Error('Unauthorized')
 
     // Check if user is admin
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
     if (profile?.role !== 'admin') throw new Error('Forbidden')
 
     const school_name = formData.get('school_name') as string
@@ -362,7 +362,7 @@ export async function getActivityById(id: string) {
         `)
         .eq('id', id)
         .eq('user_id', user.id)
-        .single()
+        .maybeSingle()
 
     if (error) throw new Error(error.message)
     return data

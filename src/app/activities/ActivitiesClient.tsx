@@ -262,14 +262,14 @@ export default function ActivitiesClient({
                                                             <div className="flex items-center gap-1 shrink-0">
                                                                 <Link
                                                                     href={`/activities/${act.id}/edit`}
-                                                                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/50 text-slate-400 hover:text-amber-600 hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                                                                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/50 text-slate-400 hover:text-amber-600 hover:bg-white transition-all lg:opacity-0 lg:group-hover:opacity-100 opacity-100"
                                                                 >
                                                                     <FileText size={16} />
                                                                 </Link>
                                                                 <button
                                                                     onClick={() => handleDeleteClick(act.id)}
                                                                     disabled={loadingId === act.id}
-                                                                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-red-100/50 text-red-400 hover:text-red-600 transition-colors opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                                                                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-red-100/50 text-red-400 hover:text-red-600 transition-colors lg:opacity-0 lg:group-hover:opacity-100 opacity-100 disabled:opacity-50"
                                                                 >
                                                                     {loadingId === act.id ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />}
                                                                 </button>

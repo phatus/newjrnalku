@@ -18,7 +18,7 @@ export default async function SettingsPage(props: {
     const { data: settings } = await adminSupa
         .from('school_settings')
         .select('*')
-        .single();
+        .maybeSingle();
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 pb-10">

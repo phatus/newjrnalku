@@ -37,7 +37,7 @@ export default async function RootLayout({
       .from('profiles')
       .select('*')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
     profile = data;
   }
 

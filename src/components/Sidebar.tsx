@@ -115,7 +115,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                     <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
                         <div className="h-10 w-10 rounded-xl overflow-hidden shadow-sm">
                             <img
-                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.name || user?.email}`}
+                                src={profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.name || user?.email}`}
                                 alt="Avatar"
                                 className="h-full w-full object-cover"
                             />

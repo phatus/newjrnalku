@@ -19,6 +19,7 @@ import { createClient } from "@/utils/supabase/server";
 import { logout } from "@/app/auth/actions";
 import Link from 'next/link';
 import { cn } from "@/lib/utils";
+import ProfileAvatar from "@/components/ProfileAvatar";
 
 export default async function ProfilePage() {
     const supabase = await createClient();
@@ -36,22 +37,22 @@ export default async function ProfilePage() {
         {
             title: "Keamanan & Akun",
             items: [
-                { label: "Ubah Kata Sandi", icon: Lock, color: "text-amber-500", bg: "bg-amber-50" },
-                { label: "Riwayat Perangkat", icon: ShieldCheck, color: "text-blue-500", bg: "bg-blue-50" },
+                { label: "Ubah Kata Sandi", icon: Lock, color: "text-amber-500", bg: "bg-amber-50", href: "/profile/change-password" },
+                { label: "Riwayat Perangkat", icon: ShieldCheck, color: "text-blue-500", bg: "bg-blue-50", href: "/profile/devices" },
             ]
         },
         {
             title: "Preferensi Aplikasi",
             items: [
-                { label: "Notifikasi Laporan", icon: Bell, color: "text-red-500", bg: "bg-red-50" },
-                { label: "Tema & Tampilan", icon: Palette, color: "text-purple-500", bg: "bg-purple-50" },
+                { label: "Notifikasi Laporan", icon: Bell, color: "text-red-500", bg: "bg-red-50", href: "/profile/preferences" },
+                { label: "Tema & Tampilan", icon: Palette, color: "text-purple-500", bg: "bg-purple-50", href: "/profile/preferences" },
             ]
         },
         {
             title: "Informasi",
             items: [
-                { label: "Bantuan & Dukungan", icon: Info, color: "text-slate-500", bg: "bg-slate-100" },
-                { label: "Tentang newjurnalku", icon: GraduationCap, color: "text-slate-500", bg: "bg-slate-100" },
+                { label: "Bantuan & Dukungan", icon: Info, color: "text-slate-500", bg: "bg-slate-100", href: "/help" },
+                { label: "Tentang newjurnalku", icon: GraduationCap, color: "text-slate-500", bg: "bg-slate-100", href: "/about" },
             ]
         }
     ];
@@ -59,22 +60,20 @@ export default async function ProfilePage() {
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
             {/* Dynamic Header Background */}
-            <div className="relative h-72 bg-slate-900 overflow-hidden">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-amber-600/20 via-slate-900 to-slate-900" />
-                <div className="absolute top-0 right-0 h-96 w-96 bg-amber-500/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+            <div className="relative h-72 bg-slate-900">
+                <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,_var(--tw-gradient-stops))] from-amber-600/20 via-slate-900 to-slate-900" />
+                    <div className="absolute top-0 right-0 h-96 w-96 bg-amber-500/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+                </div>
 
                 <div className="relative h-full flex items-end px-10 pb-12 max-w-7xl mx-auto w-full">
                     <div className="flex flex-col sm:flex-row items-center sm:items-end gap-8 text-center sm:text-left">
-                        <div className="h-32 w-32 rounded-[2.5rem] bg-white p-1.5 shadow-2xl relative group cursor-pointer overflow-hidden">
-                            <img
-                                src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.name || user.email}`}
-                                alt="Avatar"
-                                className="h-full w-full object-cover rounded-[2rem]"
-                            />
-                            <div className="absolute inset-0 bg-black/40 rounded-[2rem] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Settings className="text-white h-6 w-6" />
-                            </div>
-                        </div>
+                        <ProfileAvatar
+                            uid={user.id}
+                            url={profile?.avatar_url}
+                            name={profile?.name}
+                            email={user.email}
+                        />
                         <div className="space-y-3 pb-2">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                                 <h1 className="text-4xl font-black text-white tracking-tight">{profile?.name || user.email?.split('@')[0]}</h1>
@@ -165,7 +164,7 @@ export default async function ProfilePage() {
                                 <h4 className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] ml-4 mt-2">{section.title}</h4>
                                 <div className="grid sm:grid-cols-2 gap-2">
                                     {section.items.map((item, i) => (
-                                        <button key={i} className="flex items-center justify-between p-4 rounded-3xl hover:bg-slate-50 transition-all group active:scale-[0.98]">
+                                        <Link key={i} href={item.href || '#'} className="flex items-center justify-between p-4 rounded-3xl hover:bg-slate-50 transition-all group active:scale-[0.98]">
                                             <div className="flex items-center gap-4">
                                                 <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform", item.bg, item.color)}>
                                                     <item.icon size={20} />
@@ -173,7 +172,7 @@ export default async function ProfilePage() {
                                                 <span className="text-sm font-bold text-slate-700">{item.label}</span>
                                             </div>
                                             <ChevronRight size={18} className="text-slate-200 group-hover:text-amber-500 transition-colors" />
-                                        </button>
+                                        </Link>
                                     ))}
                                 </div>
                                 {idx < sections.length - 1 && <div className="h-px bg-slate-50 mx-4 mt-4" />}
