@@ -16,7 +16,7 @@ export default async function LabulReportPage(props: {
     if (!user) redirect('/login');
 
     const adminSupa = createAdminClient();
-    const { data: profile } = await adminSupa.from('profiles').select('*').eq('id', user.id).single();
+    const { data: profile } = await adminSupa.from('profiles').select('*').eq('id', user.id).maybeSingle();
     const { data: settings } = await adminSupa.from('school_settings').select('*').maybeSingle();
 
     const lastDay = new Date(year, month, 0).getDate();

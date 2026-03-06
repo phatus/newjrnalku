@@ -16,7 +16,7 @@ export default async function PreferencesPage() {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
     return (
         <div className="min-h-screen bg-slate-50 pb-10">

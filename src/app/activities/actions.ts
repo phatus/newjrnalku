@@ -42,7 +42,7 @@ export async function createActivity(formData: FormData) {
             status: 'Selesai'
         })
         .select()
-        .single()
+        .maybeSingle()
 
     if (activityError) {
         console.error('Activity Error:', activityError)

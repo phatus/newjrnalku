@@ -15,7 +15,7 @@ export default async function AdminPage() {
         .from('profiles')
         .select('role')
         .eq('id', user?.id)
-        .single();
+        .maybeSingle();
 
     if (profile?.role !== 'admin') {
         return redirect('/');
