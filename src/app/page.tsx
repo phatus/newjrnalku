@@ -39,6 +39,12 @@ export default async function Dashboard() {
     console.error('Profile fetch error:', e);
   }
 
+  // Fetch School Settings
+  const { data: settings } = await supabase
+    .from('school_settings')
+    .select('school_name')
+    .maybeSingle();
+
   const stats = await getDashboardStats();
   const recentActivities = await getRecentActivities();
   type MonthlyStats = { counts: number[]; raw: any[] };
@@ -56,7 +62,9 @@ export default async function Dashboard() {
       {/* Header - Desktop Optimized */}
       <header className="flex justify-between items-end">
         <div className="space-y-2">
-          <p className="text-sm font-bold text-amber-600 uppercase tracking-widest">Sekolah Menengah Kejuruan</p>
+          <p className="text-sm font-bold text-amber-600 uppercase tracking-widest">
+            {settings?.school_name || "Sekolah Menengah Kejuruan"}
+          </p>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Halo, {profile?.name?.split(' ')[0] || user.email?.split('@')[0]} 👋</h1>
         </div>
         <div className="hidden sm:flex items-center gap-3">

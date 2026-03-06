@@ -70,7 +70,7 @@ export function ReportFooter({ headmasterName, headmasterNip, profileName, profi
                         <div className="text-center space-y-1">
                             <p className="font-bold text-right">{location}, {today}</p>
                             <p className="font-bold tracking-wide">Mengetahui,</p>
-                            <p className="text-[11px] font-medium text-slate-600">Kepala {schoolName || 'Sekolah'}</p>
+                            <p className="text-[11px] font-medium text-slate-600">Kepala {schoolName || 'Sekolah Menengah Kejuruan'}</p>
                         </div>
                         <div className="space-y-1 text-center">
                             <p className="font-black underline min-w-48">{headmasterName || '................................'}</p>
