@@ -14,6 +14,9 @@ import { getDashboardStats, getRecentActivities, getMonthlyStats } from "@/app/a
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import UserIdentity from "@/components/UserIdentity";
+import { getSchedules } from "@/app/activities/schedule/actions";
+import ScheduleQuickAction from "@/components/ScheduleQuickAction";
+import { Settings } from "lucide-react";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -50,6 +53,7 @@ export default async function Dashboard() {
 
   const stats = await getDashboardStats();
   const recentActivities = await getRecentActivities();
+  const schedules = await getSchedules();
   type MonthlyStats = { counts: number[]; raw: any[] };
   const monthlyStats: MonthlyStats = await getMonthlyStats();
 
@@ -65,13 +69,22 @@ export default async function Dashboard() {
       {/* Header - Desktop Optimized */}
       <header className="flex justify-between items-end">
         <div className="space-y-2">
-          <p className="text-sm font-bold text-amber-600 uppercase tracking-widest">
-            {school?.name || "Sekolah"}
-          </p>
+          <div className="flex items-center gap-3">
+            <p className="text-sm font-bold text-amber-600 uppercase tracking-widest">
+              {school?.name || "Sekolah"}
+            </p>
+            <Link href="/activities/schedule" className="group flex items-center gap-1.5 px-3 py-1 bg-slate-100 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-widest hover:bg-amber-500 hover:text-white transition-all">
+              <Settings size={12} className="group-hover:rotate-90 transition-transform" />
+              Kelola Jadwal
+            </Link>
+          </div>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Halo, {profile?.name?.split(' ')[0] || user.email?.split('@')[0]} 👋</h1>
         </div>
         <UserIdentity profile={profile} user={user} />
       </header>
+
+      {/* Quick Schedule Confirmation */}
+      <ScheduleQuickAction initialSchedules={schedules} />
 
       {/* Stats Grid - Desktop Optimized */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">

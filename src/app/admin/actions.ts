@@ -191,3 +191,20 @@ export async function deleteUser(id: string) {
         throw new Error(error.message || 'Gagal menghapus pengguna')
     }
 }
+
+export async function updateUserPassword(id: string, password: string) {
+    const adminSupabase = createAdminClient()
+
+    try {
+        const { error } = await adminSupabase.auth.admin.updateUserById(id, {
+            password: password
+        })
+
+        if (error) throw error
+
+        return { success: true }
+    } catch (error: any) {
+        console.error('Update Password Error:', error)
+        throw new Error(error.message || 'Gagal memperbarui password')
+    }
+}

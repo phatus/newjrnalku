@@ -23,7 +23,7 @@ export async function createActivity(formData: FormData) {
     }
 
     const validatedData = validation.data
-    const { category_id, activity_date, description, evidence_link, implementation_basis_id, student_count, teaching_hours, topic, student_outcome, class_room_ids } = validatedData
+    const { category_id, activity_date, description, evidence_link, implementation_basis_id, student_count, teaching_hours, topic, learning_material, learning_outcome, student_outcome, class_room_ids } = validatedData
 
     // Get user's school_id
     const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
@@ -41,8 +41,9 @@ export async function createActivity(formData: FormData) {
             evidence_link,
             teaching_hours,
             topic,
+            learning_material,
+            learning_outcome,
             student_outcome,
-            student_count,
             status: 'Selesai'
         })
         .select()
@@ -93,16 +94,30 @@ export async function getCategories() {
 
     let query = supabase.from('report_categories').select('*')
 
-    if (schoolId) {
-        // Show: global (no school_id & no user_id) + school's + user's own
-        query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
-    } else {
-        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
-    }
+    try {
+        if (schoolId && typeof schoolId === 'string' && schoolId.length > 30) {
+            // Include system defaults (null user AND null school), 
+            // OR school-wide categories (this school AND null user),
+            // OR user-specific items
+            query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
+        } else if (user?.id) {
+            // Just defaults and user's own items
+            query = query.or(`and(user_id.is.null,school_id.is.null),user_id.eq.${user.id}`)
+        } else {
+            // Fallback for unexpected state
+            query = query.is('user_id', null).is('school_id', null)
+        }
 
-    const { data, error } = await query.order('name')
-    if (error) throw error
-    return data
+        const { data, error } = await query.order('name')
+        if (error) {
+            console.error('getCategories Error:', error)
+            throw error
+        }
+        return data || []
+    } catch (e) {
+        console.error('getCategories Unexpected Error:', e)
+        return []
+    }
 }
 
 export async function getClassRooms() {
@@ -120,15 +135,25 @@ export async function getClassRooms() {
 
     let query = supabase.from('class_rooms').select('*')
 
-    if (schoolId) {
-        query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
-    } else {
-        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
-    }
+    try {
+        if (schoolId && typeof schoolId === 'string' && schoolId.length > 30) {
+            query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
+        } else if (user?.id) {
+            query = query.or(`and(user_id.is.null,school_id.is.null),user_id.eq.${user.id}`)
+        } else {
+            query = query.is('user_id', null).is('school_id', null)
+        }
 
-    const { data, error } = await query.order('name')
-    if (error) throw error
-    return data
+        const { data, error } = await query.order('name')
+        if (error) {
+            console.error('getClassRooms Error:', error)
+            throw error
+        }
+        return data || []
+    } catch (e) {
+        console.error('getClassRooms Unexpected Error:', e)
+        return []
+    }
 }
 
 export async function getImplementationBases() {
@@ -146,15 +171,25 @@ export async function getImplementationBases() {
 
     let query = supabase.from('implementation_bases').select('*')
 
-    if (schoolId) {
-        query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
-    } else {
-        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
-    }
+    try {
+        if (schoolId && typeof schoolId === 'string' && schoolId.length > 30) {
+            query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
+        } else if (user?.id) {
+            query = query.or(`and(user_id.is.null,school_id.is.null),user_id.eq.${user.id}`)
+        } else {
+            query = query.is('user_id', null).is('school_id', null)
+        }
 
-    const { data, error } = await query.order('name')
-    if (error) throw error
-    return data
+        const { data, error } = await query.order('name')
+        if (error) {
+            console.error('getImplementationBases Error:', error)
+            throw error
+        }
+        return data || []
+    } catch (e) {
+        console.error('getImplementationBases Unexpected Error:', e)
+        return []
+    }
 }
 
 export async function getRecentActivities() {
@@ -254,52 +289,58 @@ export async function seedInitialData(formData: FormData) {
 
     const adminSupabase = createAdminClient()
 
+    const TEMPLATE_SCHOOL_ID = 'e62b1c6b-f2d7-4591-97be-492f794df156';
+    const TEMPLATE_BASES_SCHOOL_ID = 'e62b1c6b-f2d7-4591-97be-492f794df156';
+
     try {
-        // 1. Seed Categories
-        const categories = [
-            { name: 'Kegiatan Belajar Mengajar (KBM)', rhk_label: 'Proses Pembelajaran', is_teaching: true },
-            { name: 'Administrasi Kurikulum', rhk_label: 'Administrasi Sekolah', is_teaching: false },
-            { name: 'Pengembangan Diri (Pelatihan)', rhk_label: 'Kompetensi Guru', is_teaching: false },
-            { name: 'Tugas Tambahan (Wali Kelas)', rhk_label: 'Tugas Tambahan', is_teaching: false },
-            { name: 'Kegiatan Ekstrakurikuler', rhk_label: 'Kesiswaan', is_teaching: false },
-        ]
+        // 1. Seed Categories from Template
+        const { data: templateCats } = await adminSupabase
+            .from('report_categories')
+            .select('name, rhk_label, is_teaching')
+            .eq('school_id', TEMPLATE_SCHOOL_ID);
 
-        for (const cat of categories) {
-            let checkQuery = adminSupabase.from('report_categories').select('id').eq('name', cat.name)
-            if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
-            const { data } = await checkQuery.maybeSingle()
-            if (!data) {
-                await adminSupabase.from('report_categories').insert({ ...cat, school_id: schoolId })
+        if (templateCats) {
+            for (const cat of templateCats) {
+                let checkQuery = adminSupabase.from('report_categories').select('id').eq('name', cat.name)
+                if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
+                const { data } = await checkQuery.maybeSingle()
+                if (!data) {
+                    await adminSupabase.from('report_categories').insert({ ...cat, school_id: schoolId, user_id: user.id })
+                }
             }
         }
 
-        // 2. Seed Class Rooms
-        const classes = [
-            { name: 'X RPL 1' }, { name: 'X RPL 2' },
-            { name: 'XI RPL 1' }, { name: 'XI RPL 2' },
-            { name: 'XII RPL 1' }, { name: 'XII RPL 2' },
-        ]
-        for (const cls of classes) {
-            let checkQuery = adminSupabase.from('class_rooms').select('id').eq('name', cls.name)
-            if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
-            const { data } = await checkQuery.maybeSingle()
-            if (!data) {
-                await adminSupabase.from('class_rooms').insert({ ...cls, school_id: schoolId })
+        // 2. Seed Class Rooms from Template
+        const { data: templateClasses } = await adminSupabase
+            .from('class_rooms')
+            .select('name')
+            .eq('school_id', TEMPLATE_SCHOOL_ID);
+
+        if (templateClasses) {
+            for (const cls of templateClasses) {
+                let checkQuery = adminSupabase.from('class_rooms').select('id').eq('name', cls.name)
+                if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
+                const { data } = await checkQuery.maybeSingle()
+                if (!data) {
+                    await adminSupabase.from('class_rooms').insert({ ...cls, school_id: schoolId, user_id: user.id })
+                }
             }
         }
 
-        // 3. Seed Implementation Bases
-        const bases = [
-            { name: 'SK Pembagian Tugas Mengajar' },
-            { name: 'Surat Tugas Kepala Sekolah' },
-            { name: 'Program Kerja Sekolah' },
-        ]
-        for (const base of bases) {
-            let checkQuery = adminSupabase.from('implementation_bases').select('id').eq('name', base.name)
-            if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
-            const { data } = await checkQuery.maybeSingle()
-            if (!data) {
-                await adminSupabase.from('implementation_bases').insert({ ...base, school_id: schoolId })
+        // 3. Seed Implementation Bases from Template
+        const { data: templateBases } = await adminSupabase
+            .from('implementation_bases')
+            .select('name')
+            .eq('school_id', TEMPLATE_BASES_SCHOOL_ID);
+
+        if (templateBases) {
+            for (const base of templateBases) {
+                let checkQuery = adminSupabase.from('implementation_bases').select('id').eq('name', base.name)
+                if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
+                const { data } = await checkQuery.maybeSingle()
+                if (!data) {
+                    await adminSupabase.from('implementation_bases').insert({ ...base, school_id: schoolId, user_id: user.id })
+                }
             }
         }
 
@@ -434,7 +475,7 @@ export async function updateActivity(id: string, formData: FormData) {
     }
 
     const validatedData = validation.data
-    const { category_id, activity_date, description, evidence_link, implementation_basis_id, student_count, teaching_hours, topic, student_outcome, class_room_ids } = validatedData
+    const { category_id, activity_date, description, evidence_link, implementation_basis_id, student_count, teaching_hours, topic, learning_material, learning_outcome, student_outcome, class_room_ids } = validatedData
 
     // Update Activity
     const { error: activityError } = await supabase
@@ -447,6 +488,8 @@ export async function updateActivity(id: string, formData: FormData) {
             evidence_link,
             teaching_hours,
             topic,
+            learning_material,
+            learning_outcome,
             student_outcome,
             student_count,
             updated_at: new Date().toISOString()

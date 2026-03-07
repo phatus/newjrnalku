@@ -140,8 +140,8 @@ export default async function JurnalReportPage(props: {
                                     )}
                                     <td className="border border-slate-900 px-2 py-2 text-center font-bold">{classNames || '-'}</td>
                                     <td className="border border-slate-900 px-2 py-2 text-center font-bold">{act.teaching_hours || '-'}</td>
-                                    <td className="border border-slate-900 px-2 py-2">{act.topic || act.description}</td>
-                                    <td className="border border-slate-900 px-2 py-2 text-[9px]">{act.student_outcome || '-'}</td>
+                                    <td className="border border-slate-900 px-2 py-2">{act.learning_material || act.topic || act.description}</td>
+                                    <td className="border border-slate-900 px-2 py-2 text-[9px]">{act.learning_outcome || act.student_outcome || '-'}</td>
                                 </tr>
                             );
                         });
@@ -163,6 +163,7 @@ export default async function JurnalReportPage(props: {
                 headmasterNip={profile?.school?.headmaster_nip}
                 schoolName={profile?.school?.name}
                 schoolAddress={profile?.school?.address}
+                schoolCity={profile?.school?.city}
             />
         </div>
     );

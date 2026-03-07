@@ -34,18 +34,24 @@ export function ReportHeader({ schoolName, schoolAddress }: { schoolName?: strin
     );
 }
 
-export function ReportFooter({ headmasterName, headmasterNip, profileName, profileNip, schoolName, schoolAddress }: {
+export function ReportFooter({ headmasterName, headmasterNip, profileName, profileNip, schoolName, schoolAddress, schoolCity }: {
     headmasterName?: string;
     headmasterNip?: string;
     profileName?: string;
     profileNip?: string;
     schoolName?: string;
     schoolAddress?: string;
+    schoolCity?: string;
 }) {
     const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-    // Extract last word from address which is usually the city in this context
-    const addressParts = (schoolAddress || '').trim().split(/\s+/);
-    const location = addressParts.length > 0 ? addressParts[addressParts.length - 1] : 'Pacitan';
+
+    // Prefer schoolCity, fallback to last word of address (legacy), fallback to Pacitan
+    let location = schoolCity;
+    if (!location && schoolAddress) {
+        const addressParts = schoolAddress.trim().split(/\s+/);
+        location = addressParts[addressParts.length - 1];
+    }
+    if (!location) location = 'Pacitan';
 
     return (
         <div className="mt-20 space-y-12 border-t border-slate-200 pt-12 text-sm">

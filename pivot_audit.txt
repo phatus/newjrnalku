@@ -1,0 +1,3 @@
+--- schedule_class_rooms Columns ---
+schedule_id: uuid (uuid)
+class_room_id: integer (int4)

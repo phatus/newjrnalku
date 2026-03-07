@@ -1,20 +1,42 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronLeft, Trash2, Shield, User, Loader2, Mail } from "lucide-react";
+import { ChevronLeft, Trash2, Shield, User, Loader2, Mail, Key, X, Save } from "lucide-react";
 import Link from "next/link";
-import { updateUserRole, deleteUser } from "@/app/admin/actions";
+import { updateUserRole, deleteUser, updateUserPassword } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
 
 export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
     const [users, setUsers] = useState(initialUsers);
     const [loadingId, setLoadingId] = useState<string | null>(null);
+    const [editingPasswordId, setEditingPasswordId] = useState<string | null>(null);
+    const [newPassword, setNewPassword] = useState("");
 
     async function handleRoleChange(id: string, newRole: string) {
         setLoadingId(id);
         try {
             await updateUserRole(id, newRole);
             setUsers(users.map(u => u.id === id ? { ...u, role: newRole } : u));
+        } catch (err: any) {
+            alert(err.message);
+        } finally {
+            setLoadingId(null);
+        }
+    }
+
+    async function handlePasswordUpdate() {
+        if (!editingPasswordId || !newPassword) return;
+        if (newPassword.length < 6) {
+            alert("Password minimal 6 karakter");
+            return;
+        }
+
+        setLoadingId(editingPasswordId);
+        try {
+            await updateUserPassword(editingPasswordId, newPassword);
+            alert("Password berhasil diperbarui");
+            setEditingPasswordId(null);
+            setNewPassword("");
         } catch (err: any) {
             alert(err.message);
         } finally {
@@ -36,7 +58,52 @@ export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-slate-50 pb-10">
+        <div className="flex flex-col min-h-screen bg-slate-50 pb-10 relative">
+            {/* Modal Password Reset */}
+            {editingPasswordId && (
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-6">
+                    <div className="bg-white rounded-[2rem] shadow-2xl border border-slate-100 w-full max-w-md p-8 overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="flex items-center justify-between mb-6">
+                            <div className="flex items-center gap-3">
+                                <div className="h-10 w-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center">
+                                    <Key size={20} />
+                                </div>
+                                <h3 className="font-black text-slate-900 uppercase tracking-tight">Atur Ulang Password</h3>
+                            </div>
+                            <button
+                                onClick={() => setEditingPasswordId(null)}
+                                className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-slate-900 transition-colors"
+                            >
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password Baru</label>
+                                <input
+                                    type="text"
+                                    value={newPassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    placeholder="Masukkan password baru..."
+                                    className="w-full h-12 px-5 rounded-2xl border border-slate-100 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-amber-500 transition-all font-medium"
+                                />
+                                <p className="text-[10px] text-slate-400 mt-2 ml-1">Minimal 6 karakter. Pastikan pegawai mencatat password baru ini.</p>
+                            </div>
+
+                            <button
+                                onClick={handlePasswordUpdate}
+                                disabled={loadingId === editingPasswordId || !newPassword}
+                                className="w-full h-12 rounded-2xl bg-slate-900 text-white font-bold flex items-center justify-center gap-3 hover:bg-slate-800 transition-all disabled:opacity-50 mt-4 group"
+                            >
+                                {loadingId === editingPasswordId ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} className="group-hover:scale-110 transition-transform" />}
+                                SIMPAN PASSWORD BARU
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="bg-white border-b border-slate-100 px-6 sm:px-10 py-8">
                 <div className="flex items-center gap-4 mb-4">
                     <Link
@@ -98,7 +165,15 @@ export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
                                             <option value="admin">Administrator</option>
                                         </select>
                                     </td>
-                                    <td className="px-8 py-5 text-right">
+                                    <td className="px-8 py-5 text-right flex items-center justify-end gap-2">
+                                        <button
+                                            onClick={() => setEditingPasswordId(user.id)}
+                                            disabled={loadingId === user.id}
+                                            className="h-10 w-10 flex items-center justify-center rounded-xl bg-amber-50 text-amber-400 hover:text-amber-600 transition-colors disabled:opacity-50"
+                                            title="Atur Ulang Password"
+                                        >
+                                            <Key size={16} />
+                                        </button>
                                         <button
                                             onClick={() => handleDelete(user.id)}
                                             disabled={loadingId === user.id}

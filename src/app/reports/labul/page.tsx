@@ -22,11 +22,14 @@ export default async function LabulReportPage(props: {
     const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
     const endDate = `${year}-${month.toString().padStart(2, '0')}-${lastDay}`;
 
-    const { data: activities, error } = await supabase
+    const { data: activities, error } = await adminSupa
         .from('activities')
         .select(`
             *,
-            category:report_categories(name, rhk_label)
+            category:report_categories(name, rhk_label, is_teaching),
+            classes:activity_class_rooms(
+                class:class_rooms(name)
+            )
         `)
         .eq('user_id', user.id)
         .gte('activity_date', startDate)
@@ -35,25 +38,45 @@ export default async function LabulReportPage(props: {
 
     if (error) console.error('Labul query error:', error);
 
-    // Group activities by RHK category with aggregation for Uraian and Volume
-    const groupedRHK: Record<string, {
+    // Group activities by RHK and Activity Description for deduplication
+    const groupedActivities: Record<string, {
         rhk: string;
-        descriptions: string[];
+        description: string;
         volume: number;
-        evidences: string[]
+        evidences: Set<string>
     }> = {};
 
     (activities || []).forEach((act: any) => {
         const rhk = act.category?.rhk_label || "Lain-lain";
-        if (!groupedRHK[rhk]) {
-            groupedRHK[rhk] = { rhk, descriptions: [], volume: 0, evidences: [] };
+
+        // For teaching activities, add prefix and use topic (Nama Pelajaran)
+        let baseDesc = act.category?.is_teaching ? (act.topic || act.description) : act.description;
+        let displayDesc = act.category?.is_teaching ? `Melaksanakan kegiatan pembelajaran ${baseDesc}` : baseDesc;
+
+        // Add classes if available
+        if (act.classes && act.classes.length > 0) {
+            const clsNames = act.classes.map((c: any) => c.class?.name).filter((name: string) => name).sort().join(', ');
+            if (clsNames) displayDesc = `${displayDesc} (Kls: ${clsNames})`;
         }
-        groupedRHK[rhk].descriptions.push(act.description);
-        groupedRHK[rhk].volume += 1;
+
+        const groupKey = `${rhk}-${displayDesc}`;
+
+        if (!groupedActivities[groupKey]) {
+            groupedActivities[groupKey] = {
+                rhk,
+                description: displayDesc,
+                volume: 0,
+                evidences: new Set()
+            };
+        }
+
+        groupedActivities[groupKey].volume += 1;
         if (act.evidence_link) {
-            groupedRHK[rhk].evidences.push(act.evidence_link);
+            groupedActivities[groupKey].evidences.add(act.evidence_link);
         }
     });
+
+    const finalReportData = Object.values(groupedActivities).sort((a, b) => a.rhk.localeCompare(b.rhk));
 
     const monthName = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][month - 1];
 
@@ -82,50 +105,54 @@ export default async function LabulReportPage(props: {
                     <tr>
                         <td className="border border-slate-900 p-0">
                             <table className="w-full border-collapse text-[9px]">
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NAMA</td>
-                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_name || '................................'}</td>
-                                </tr>
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NIP</td>
-                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_nip || '................................'}</td>
-                                </tr>
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">PANGKAT/GOL</td>
-                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_pangkat || '................................'}</td>
-                                </tr>
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">JABATAN</td>
-                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_jabatan || 'Kepala Madrasah'}</td>
-                                </tr>
-                                <tr>
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
-                                    <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
-                                </tr>
+                                <tbody>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NAMA</td>
+                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_name || '................................'}</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NIP</td>
+                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_nip || '................................'}</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">PANGKAT/GOL</td>
+                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_pangkat || '................................'}</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">JABATAN</td>
+                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_jabatan || 'Kepala Madrasah'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
+                                        <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </td>
                         <td className="border border-slate-900 p-0">
                             <table className="w-full border-collapse text-[9px]">
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NAMA</td>
-                                    <td className="px-3 py-1.5">: {profile?.name || '................................'}</td>
-                                </tr>
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NIP</td>
-                                    <td className="px-3 py-1.5">: {profile?.nip || '................................'}</td>
-                                </tr>
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">PANGKAT/GOL</td>
-                                    <td className="px-3 py-1.5">: {profile?.pangkat_gol || '................................'}</td>
-                                </tr>
-                                <tr className="border-b border-slate-900">
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">JABATAN</td>
-                                    <td className="px-3 py-1.5">: {profile?.jabatan || '................................'}</td>
-                                </tr>
-                                <tr>
-                                    <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
-                                    <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
-                                </tr>
+                                <tbody>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NAMA</td>
+                                        <td className="px-3 py-1.5">: {profile?.name || '................................'}</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NIP</td>
+                                        <td className="px-3 py-1.5">: {profile?.nip || '................................'}</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">PANGKAT/GOL</td>
+                                        <td className="px-3 py-1.5">: {profile?.pangkat_gol || '................................'}</td>
+                                    </tr>
+                                    <tr className="border-b border-slate-900">
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">JABATAN</td>
+                                        <td className="px-3 py-1.5">: {profile?.jabatan || '................................'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
+                                        <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                         </td>
                     </tr>
@@ -144,28 +171,53 @@ export default async function LabulReportPage(props: {
                     </tr>
                 </thead>
                 <tbody>
-                    {Object.values(groupedRHK).length > 0 ? Object.values(groupedRHK).map((item, i) => (
-                        <tr key={item.rhk} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                            <td className="border border-slate-900 px-2 py-3 text-center font-bold align-top">{i + 1}</td>
-                            <td className="border border-slate-900 px-3 py-3 font-bold align-top">{item.rhk}</td>
-                            <td className="border border-slate-900 px-3 py-3 align-top">
-                                <ul className="list-disc pl-4 space-y-1 text-[9px]">
-                                    {Array.from(new Set(item.descriptions)).map((desc, idx) => (
-                                        <li key={idx}>{desc}</li>
-                                    ))}
-                                </ul>
-                            </td>
-                            <td className="border border-slate-900 px-2 py-3 text-center align-top font-bold whitespace-nowrap">{item.volume}</td>
-                            <td className="border border-slate-900 px-3 py-3 align-top text-[8px] text-blue-600 break-all">
-                                <div className="space-y-1">
-                                    {Array.from(new Set(item.evidences)).map((link, idx) => (
-                                        <p key={idx} className="underline">{link}</p>
-                                    ))}
-                                    {item.evidences.length === 0 && <p className="text-slate-400">-</p>}
-                                </div>
-                            </td>
-                        </tr>
-                    )) : (
+                    {(() => {
+                        const rhkSpans: Record<string, number> = {};
+                        finalReportData.forEach(item => {
+                            rhkSpans[item.rhk] = (rhkSpans[item.rhk] || 0) + 1;
+                        });
+
+                        let currentRHK = "";
+                        let sequenceNumber = 0; // Numbering resets/persists based on RHK change
+
+                        return (finalReportData || []).map((item, i) => {
+                            const isNewRHK = item.rhk !== currentRHK;
+                            if (isNewRHK) {
+                                currentRHK = item.rhk;
+                                sequenceNumber++; // Increment NO when RHK changes
+                            }
+
+                            return (
+                                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                    {isNewRHK ? (
+                                        <td rowSpan={rhkSpans[item.rhk]} className="border border-slate-900 px-2 py-3 text-center font-bold align-top">
+                                            {sequenceNumber}
+                                        </td>
+                                    ) : null}
+                                    {isNewRHK ? (
+                                        <td rowSpan={rhkSpans[item.rhk]} className="border border-slate-900 px-3 py-3 font-bold align-top">
+                                            {item.rhk}
+                                        </td>
+                                    ) : null}
+                                    <td className="border border-slate-900 px-3 py-3 align-top">
+                                        {item.description}
+                                    </td>
+                                    <td className="border border-slate-900 px-2 py-3 text-center align-top font-bold whitespace-nowrap">
+                                        {item.volume}
+                                    </td>
+                                    <td className="border border-slate-900 px-3 py-3 align-top text-[8px] text-blue-600 break-all">
+                                        <div className="space-y-1">
+                                            {Array.from(item.evidences).map((link, idx) => (
+                                                <p key={idx} className="underline line-clamp-1">{link}</p>
+                                            ))}
+                                            {item.evidences.size === 0 && <p className="text-slate-400">-</p>}
+                                        </div>
+                                    </td>
+                                </tr>
+                            );
+                        });
+                    })()}
+                    {finalReportData.length === 0 && (
                         <tr>
                             <td colSpan={5} className="border border-slate-900 px-2 py-12 text-center italic text-slate-500">
                                 Belum ada data kinerja untuk periode ini.
@@ -184,6 +236,7 @@ export default async function LabulReportPage(props: {
                 headmasterNip={profile?.school?.headmaster_nip}
                 schoolName={profile?.school?.name}
                 schoolAddress={profile?.school?.address}
+                schoolCity={profile?.school?.city}
             />
         </div>
     );

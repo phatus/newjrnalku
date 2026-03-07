@@ -154,6 +154,20 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                     </div>
 
                     <div className="space-y-2">
+                        <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Nama Mata Pelajaran (Khusus KBM)</label>
+                        <div className="relative">
+                            <BookOpen className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                            <input
+                                name="topic"
+                                type="text"
+                                defaultValue={initialData?.topic || ""}
+                                placeholder="Misal: Informatika / Matematika"
+                                className="w-full h-14 pl-12 pr-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-amber-500 transition-all font-bold text-slate-700"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
                         <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Dasar Pelaksanaan</label>
                         <div className="relative">
                             <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
@@ -258,13 +272,13 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                         </div>
 
                         <div className="space-y-2">
-                            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Materi / Topik Pembelajaran</label>
+                            <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Materi Pembelajaran yang Diajarkan</label>
                             <div className="relative">
                                 <BookOpen className="absolute left-4 top-5 h-5 w-5 text-slate-400" />
                                 <textarea
                                     name="learning_material"
                                     rows={3}
-                                    defaultValue={initialData?.topic || ""}
+                                    defaultValue={initialData?.learning_material || ""}
                                     placeholder="Topik materi yang diajarkan hari ini..."
                                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-amber-500 transition-all font-bold text-slate-700 resize-none placeholder:font-medium"
                                 />
@@ -278,8 +292,8 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                                 <textarea
                                     name="learning_outcome"
                                     rows={3}
-                                    defaultValue={initialData?.student_outcome || ""}
-                                    placeholder="Siswa mampu memahami konsep dasar basis data relasional..."
+                                    defaultValue={initialData?.learning_outcome || ""}
+                                    placeholder="Siswa mampu memahami konsep dasar..."
                                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-amber-500 transition-all font-bold text-slate-700 resize-none placeholder:font-medium"
                                 />
                             </div>
@@ -302,7 +316,7 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                                 <textarea
                                     name="learning_outcome"
                                     rows={3}
-                                    defaultValue={initialData?.student_outcome || ""}
+                                    defaultValue={initialData?.learning_outcome || ""}
                                     placeholder="Misal: Dokumen RPP semester genap selesai disusun..."
                                     className="w-full pl-12 pr-4 py-4 rounded-2xl bg-slate-50 border-none focus:ring-2 focus:ring-amber-500 transition-all font-bold text-slate-700 resize-none placeholder:font-medium"
                                 />

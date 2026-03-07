@@ -11,6 +11,7 @@ import { APP_VERSION_LABEL } from "@/lib/version";
 const navItems = [
     { name: "Beranda", href: "/", icon: Home },
     { name: "Kegiatan Harian", href: "/activities", icon: ClipboardList },
+    { name: "Kelola Jadwal", href: "/activities/schedule", icon: Settings },
     { name: "Pusat Laporan", href: "/reports", icon: BarChart2 },
     { name: "Data Master", href: "/master-data", icon: Database },
     { name: "Profil Saya", href: "/profile", icon: User },

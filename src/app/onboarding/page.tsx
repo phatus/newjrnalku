@@ -19,7 +19,7 @@ export default function OnboardingPage() {
     // NPSN lookup state
     const [npsn, setNpsn] = useState("");
     const [npsnLoading, setNpsnLoading] = useState(false);
-    const [schoolData, setSchoolData] = useState<{ name: string; address: string | null; type: string | null } | null>(null);
+    const [schoolData, setSchoolData] = useState<{ name: string; address: string | null; city: string | null; type: string | null } | null>(null);
     const [npsnError, setNpsnError] = useState("");
     const [npsnVerified, setNpsnVerified] = useState(false);
 
@@ -60,12 +60,29 @@ export default function OnboardingPage() {
             const data = await res.json();
 
             if (data.found) {
-                setSchoolData({ name: data.name, address: data.address, type: data.type });
+                setSchoolData({
+                    name: data.name,
+                    address: data.address || "",
+                    city: data.city || "",
+                    type: data.type
+                });
                 setNpsnVerified(true);
             } else if (data.error) {
-                setNpsnError(data.error);
+                // If the API returns a manual URL for verification
+                if (data.manual_url) {
+                    setNpsnError(
+                        <span>
+                            {data.error} <br />
+                            <a href={data.manual_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-red-900 mt-1 inline-block">
+                                Klik di sini untuk cek manual di web Kemendikdasmen
+                            </a>
+                        </span> as any
+                    );
+                } else {
+                    setNpsnError(data.error || "Sekolah tidak ditemukan. Pastikan NPSN benar.");
+                }
             } else {
-                setNpsnError("Sekolah tidak ditemukan. Pastikan NPSN benar.");
+                setNpsnError("Gagal mengambil data. Silakan isi secara manual.");
             }
         } catch (err) {
             console.error("NPSN Lookup Fetch Exception:", err);
@@ -203,7 +220,43 @@ export default function OnboardingPage() {
                         <form action={createSchool} onSubmit={handleSubmit} className="space-y-5">
                             <input type="hidden" name="npsn" value={npsn} />
                             <input type="hidden" name="school_name" value={schoolData?.name || ""} />
-                            <input type="hidden" name="school_address" value={schoolData?.address || ""} />
+
+                            {/* Hidden inputs are only for auto-filled data, but we show them for verification */}
+                            {npsnVerified && schoolData && (
+                                <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Alamat Sekolah</label>
+                                        <div className="relative group">
+                                            <MapPin className="absolute left-4 top-4 h-5 w-5 text-slate-300 group-focus-within:text-amber-500 transition-colors" />
+                                            <textarea
+                                                name="school_address"
+                                                value={schoolData.address || ""}
+                                                onChange={(e) => setSchoolData({ ...schoolData, address: e.target.value })}
+                                                placeholder="Alamat lengkap"
+                                                rows={2}
+                                                className="w-full pl-12 pr-5 py-3 rounded-xl border-none bg-slate-50 shadow-sm focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 font-bold placeholder:font-medium placeholder:text-slate-300 resize-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] ml-1 text-amber-600">Kabupaten / Kota (Untuk Tanda Tangan) *</label>
+                                        <div className="relative group">
+                                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-amber-300 group-focus-within:text-amber-500 transition-colors" />
+                                            <input
+                                                type="text"
+                                                name="school_city"
+                                                value={schoolData.city || ""}
+                                                onChange={(e) => setSchoolData({ ...schoolData, city: e.target.value })}
+                                                placeholder="Contoh: Pacitan"
+                                                required
+                                                className="w-full h-13 pl-12 pr-5 rounded-xl border-none bg-amber-50 shadow-sm focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 font-bold placeholder:font-medium placeholder:text-slate-300"
+                                            />
+                                        </div>
+                                        <p className="text-[9px] text-amber-500 font-medium ml-1 italic">* Contoh tampilan: {schoolData.city || "Pacitan"}, 7 Maret 2026</p>
+                                    </div>
+                                </div>
+                            )}
 
                             {/* Manual name input (only if NPSN lookup failed but user wants to enter manually) */}
                             {!npsnVerified && npsn.length === 8 && npsnError && (
@@ -233,6 +286,19 @@ export default function OnboardingPage() {
                                                 placeholder="Alamat lengkap (opsional)"
                                                 rows={2}
                                                 className="w-full pl-12 pr-5 py-3 rounded-xl border-none bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 font-bold placeholder:font-medium placeholder:text-slate-300 resize-none"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] ml-1">Kabupaten / Kota *</label>
+                                        <div className="relative group">
+                                            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-amber-300 group-focus-within:text-amber-500 transition-colors" />
+                                            <input
+                                                type="text"
+                                                name="school_city_manual"
+                                                placeholder="Contoh: Pacitan"
+                                                required
+                                                className="w-full h-13 pl-12 pr-5 rounded-xl border-none bg-white shadow-[0_4px_20px_-4px_rgba(0,0,0,0.04)] focus:ring-2 focus:ring-amber-500 transition-all text-slate-900 font-bold placeholder:font-medium placeholder:text-slate-300"
                                             />
                                         </div>
                                     </div>

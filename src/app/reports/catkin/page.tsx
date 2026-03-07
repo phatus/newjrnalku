@@ -142,12 +142,12 @@ export default async function CatkinReportPage(props: {
                                         )}
                                         <td className="border border-slate-900 px-2 py-2">{act.basis?.name || '-'}</td>
                                         <td className="border border-slate-900 px-2 py-2">
-                                            <div className="font-medium">{act.description}</div>
+                                            <div className="font-medium">{act.category?.is_teaching ? (act.learning_material || act.description) : act.description}</div>
                                             {act.category?.is_teaching && classNames && (
                                                 <div className="text-[9px] text-slate-600 italic mt-0.5">Kls: {classNames}</div>
                                             )}
                                         </td>
-                                        <td className="border border-slate-900 px-2 py-2 text-[9px]">{act.student_outcome || 'Terlaksana'}</td>
+                                        <td className="border border-slate-900 px-2 py-2 text-[9px]">{act.learning_outcome || act.student_outcome || 'Terlaksana'}</td>
                                         {actIndex === 0 && (
                                             <td rowSpan={dateActivities.length} className="border border-slate-900 px-2 py-2 text-center align-top"></td>
                                         )}
@@ -168,6 +168,7 @@ export default async function CatkinReportPage(props: {
                 headmasterNip={profile?.school?.headmaster_nip}
                 schoolName={profile?.school?.name}
                 schoolAddress={profile?.school?.address}
+                schoolCity={profile?.school?.city}
             />
         </div>
     );

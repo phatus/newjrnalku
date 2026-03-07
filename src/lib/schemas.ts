@@ -8,6 +8,8 @@ export const ActivitySchema = z.object({
     evidence_link: z.string().optional().nullable(),
     teaching_hours: z.string().optional().nullable(),
     topic: z.string().optional().nullable(),
+    learning_material: z.string().optional().nullable(),
+    learning_outcome: z.string().optional().nullable(),
     student_outcome: z.string().optional().nullable(),
     student_count: z.union([z.string(), z.number()]).optional().nullable().transform(val => {
         if (!val) return null;
