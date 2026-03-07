@@ -8,11 +8,12 @@ export async function middleware(request: NextRequest) {
 
     const isLoginPage = nextUrl.pathname === '/login'
     const isRegisterPage = nextUrl.pathname === '/register'
+    const isConfirmPage = nextUrl.pathname === '/confirm-email'
     const isAuthCallback = nextUrl.pathname.startsWith('/auth')
     const isOnboarding = nextUrl.pathname.startsWith('/onboarding')
 
     // Not logged in → redirect to login (except public pages)
-    if (!user && !isLoginPage && !isRegisterPage && !isAuthCallback) {
+    if (!user && !isLoginPage && !isRegisterPage && !isConfirmPage && !isAuthCallback) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 

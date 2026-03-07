@@ -55,7 +55,7 @@ export async function register(formData: FormData) {
         }
     }
 
-    return redirect('/login?message=' + encodeURIComponent('Pendaftaran berhasil! Silakan periksa email Anda atau langsung masuk.') + '&type=success')
+    return redirect('/confirm-email')
 }
 
 export async function updateProfile(formData: FormData) {

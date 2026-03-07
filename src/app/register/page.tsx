@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { register } from "@/app/auth/actions";
 import { cn } from "@/lib/utils";
+import { APP_VERSION_LABEL } from "@/lib/version";
 
 export default function RegisterPage() {
     const [loading, setLoading] = useState(false);
@@ -60,7 +61,7 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="absolute bottom-10 left-12">
-                    <p className="text-slate-600 text-xs font-black tracking-[0.3em] uppercase">NewJurnalku v1.0.1 &copy; 2026</p>
+                    <p className="text-slate-600 text-xs font-black tracking-[0.3em] uppercase">{APP_VERSION_LABEL}</p>
                 </div>
             </div>
 
@@ -164,7 +165,7 @@ export default function RegisterPage() {
 
                     {/* Mobile version copyright */}
                     <div className="lg:hidden mt-12 text-center w-full">
-                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">NewJurnalku v1.0.1 &copy; 2026</p>
+                        <p className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">{APP_VERSION_LABEL}</p>
                     </div>
                 </div>
             </div>

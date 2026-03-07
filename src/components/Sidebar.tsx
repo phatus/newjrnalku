@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Home, ClipboardList, BarChart2, User, PlusCircle, LogOut, Settings, Shield, Database, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/auth/actions";
+import { APP_VERSION_LABEL } from "@/lib/version";
 
 const navItems = [
     { name: "Beranda", href: "/", icon: Home },
@@ -116,6 +117,10 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                     </button>
                 </div>
 
+                {/* Version */}
+                <div className="px-6 pb-4 pt-1">
+                    <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em] text-center">{APP_VERSION_LABEL}</p>
+                </div>
 
             </aside>
         </>

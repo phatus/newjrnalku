@@ -10,21 +10,38 @@ export async function createSchool(formData: FormData) {
 
     if (!user) throw new Error('Unauthorized')
 
-    const schoolName = formData.get('school_name') as string
-    const schoolAddress = formData.get('school_address') as string
+    const npsn = (formData.get('npsn') as string)?.trim()
+    const schoolName = (formData.get('school_name') as string)?.trim() || (formData.get('school_name_manual') as string)?.trim()
+    const schoolAddress = (formData.get('school_address') as string)?.trim() || (formData.get('school_address_manual') as string)?.trim()
 
-    if (!schoolName?.trim()) {
+    if (!npsn || npsn.length < 8) {
+        return redirect('/onboarding?message=' + encodeURIComponent('NPSN wajib diisi (8 digit).') + '&type=error')
+    }
+
+    if (!schoolName) {
         return redirect('/onboarding?message=' + encodeURIComponent('Nama sekolah wajib diisi.') + '&type=error')
     }
 
     const adminSupabase = createAdminClient()
 
-    // Create the school
+    // Check if school with this NPSN already exists
+    const { data: existingSchool } = await adminSupabase
+        .from('schools')
+        .select('id, name')
+        .eq('npsn', npsn)
+        .maybeSingle()
+
+    if (existingSchool) {
+        return redirect('/onboarding?message=' + encodeURIComponent('Sekolah dengan NPSN ' + npsn + ' sudah terdaftar (' + existingSchool.name + '). Hubungi Admin sekolah tersebut untuk mendapatkan kode undangan.') + '&type=error')
+    }
+
+    // Create the school with NPSN
     const { data: school, error: schoolError } = await adminSupabase
         .from('schools')
         .insert({
-            name: schoolName.trim(),
-            address: schoolAddress?.trim() || null,
+            name: schoolName,
+            address: schoolAddress || null,
+            npsn: npsn,
         })
         .select()
         .single()
@@ -49,7 +66,7 @@ export async function createSchool(formData: FormData) {
         return redirect('/onboarding?message=' + encodeURIComponent('Sekolah dibuat, tetapi gagal mengaitkan profil.') + '&type=error')
     }
 
-    return redirect('/?message=' + encodeURIComponent('Selamat! Sekolah "' + schoolName + '" berhasil dibuat. Anda menjadi Admin.') + '&type=success')
+    return redirect('/?message=' + encodeURIComponent('Selamat! Sekolah "' + schoolName + '" berhasil didaftarkan. Anda menjadi Admin.') + '&type=success')
 }
 
 export async function joinSchool(formData: FormData) {
