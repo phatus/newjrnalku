@@ -11,9 +11,10 @@ export async function middleware(request: NextRequest) {
     const isConfirmPage = nextUrl.pathname === '/confirm-email'
     const isAuthCallback = nextUrl.pathname.startsWith('/auth')
     const isOnboarding = nextUrl.pathname.startsWith('/onboarding')
+    const isApi = nextUrl.pathname.startsWith('/api')
 
     // Not logged in → redirect to login (except public pages)
-    if (!user && !isLoginPage && !isRegisterPage && !isConfirmPage && !isAuthCallback) {
+    if (!user && !isLoginPage && !isRegisterPage && !isConfirmPage && !isAuthCallback && !isApi) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
@@ -23,7 +24,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Logged in but no school → redirect to onboarding
-    if (user && !isOnboarding && !isAuthCallback && !isLoginPage && !isRegisterPage) {
+    if (user && !isOnboarding && !isAuthCallback && !isLoginPage && !isRegisterPage && !isApi) {
         const { data: profile } = await supabase
             .from('profiles')
             .select('school_id')

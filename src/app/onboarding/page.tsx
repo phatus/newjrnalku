@@ -41,6 +41,22 @@ export default function OnboardingPage() {
 
         try {
             const res = await fetch(`/api/npsn?npsn=${trimmed}`);
+
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                setNpsnError(errorData.error || `Server error (${res.status}). Coba lagi.`);
+                console.error("NPSN Lookup Status Error:", res.status, errorData);
+                return;
+            }
+
+            const contentType = res.headers.get("content-type");
+            if (!contentType || !contentType.includes("application/json")) {
+                const text = await res.text();
+                console.error("Expected JSON but received:", contentType, text.slice(0, 200));
+                setNpsnError("Server mengembalikan format yang salah. Silakan refresh halaman dan coba lagi.");
+                return;
+            }
+
             const data = await res.json();
 
             if (data.found) {
@@ -51,8 +67,9 @@ export default function OnboardingPage() {
             } else {
                 setNpsnError("Sekolah tidak ditemukan. Pastikan NPSN benar.");
             }
-        } catch {
-            setNpsnError("Gagal menghubungi server. Coba lagi.");
+        } catch (err) {
+            console.error("NPSN Lookup Fetch Exception:", err);
+            setNpsnError("Gagal menghubungi server. Periksa koneksi internet Anda.");
         } finally {
             setNpsnLoading(false);
         }
@@ -160,9 +177,12 @@ export default function OnboardingPage() {
 
                             {/* NPSN Error */}
                             {npsnError && (
-                                <div className="p-3 rounded-xl bg-red-50 border border-red-100 flex items-center gap-2 animate-in fade-in duration-300">
-                                    <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
-                                    <p className="text-xs font-bold text-red-600">{npsnError}</p>
+                                <div className="p-4 rounded-xl bg-red-50 border border-red-100 animate-in fade-in duration-300">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
+                                        <p className="text-xs font-black text-red-600 uppercase tracking-wider">Pencarian Gagal</p>
+                                    </div>
+                                    <p className="text-xs font-bold text-red-700 leading-relaxed">{npsnError}</p>
                                 </div>
                             )}
 
