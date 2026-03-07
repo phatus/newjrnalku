@@ -1,5 +1,7 @@
 import React from "react";
 import { Shield, Users, Database, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import UserIdentity from "@/components/UserIdentity";
 import Link from "next/link";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
@@ -13,11 +15,11 @@ export default async function AdminPage() {
     // Check role
     const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('*')
         .eq('id', user?.id)
         .maybeSingle();
 
-    if (profile?.role !== 'admin') {
+    if (!profile || !['admin', 'super_admin'].includes(profile.role)) {
         return redirect('/');
     }
 
@@ -35,8 +37,13 @@ export default async function AdminPage() {
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 pb-10">
             <div className="bg-white border-b border-slate-100 px-6 sm:px-10 py-8">
-                <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Panel Kontrol</span>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight mt-1">Administrasi</h1>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 max-w-7xl mx-auto">
+                    <div className="space-y-1">
+                        <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Panel Kontrol</span>
+                        <h1 className="text-3xl font-black text-slate-900 tracking-tight mt-1">Administrasi</h1>
+                    </div>
+                    <UserIdentity profile={profile} user={user} />
+                </div>
             </div>
 
             <div className="max-w-7xl mx-auto w-full px-6 sm:px-10 mt-10">
@@ -99,7 +106,7 @@ export default async function AdminPage() {
                         </div>
 
                         <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm">
-                            <h2 className="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Pengaturan Sekolah</h2>
+                            <h2 className="text-xl font-black text-slate-900 mb-6 uppercase tracking-tight">Identitas Sekolah</h2>
                             <div className="p-8 rounded-[2rem] bg-indigo-50 border border-indigo-100 text-center">
                                 <p className="text-sm font-bold text-indigo-900 mb-4">Konfigurasi Identitas Sekolah</p>
                                 <Link href="/settings" className="inline-flex h-12 items-center px-8 rounded-xl bg-indigo-600 text-white font-bold text-sm uppercase tracking-widest hover:bg-indigo-700 transition-colors">
@@ -114,6 +121,3 @@ export default async function AdminPage() {
     );
 }
 
-function cn(...inputs: any[]) {
-    return inputs.filter(Boolean).join(' ');
-}

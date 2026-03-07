@@ -16,8 +16,7 @@ export default async function LabulReportPage(props: {
     if (!user) redirect('/login');
 
     const adminSupa = createAdminClient();
-    const { data: profile } = await adminSupa.from('profiles').select('*').eq('id', user.id).maybeSingle();
-    const { data: settings } = await adminSupa.from('school_settings').select('*').maybeSingle();
+    const { data: profile } = await adminSupa.from('profiles').select('*, school:schools(*)').eq('id', user.id).maybeSingle();
 
     const lastDay = new Date(year, month, 0).getDate();
     const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
@@ -85,23 +84,23 @@ export default async function LabulReportPage(props: {
                             <table className="w-full border-collapse text-[9px]">
                                 <tr className="border-b border-slate-900">
                                     <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NAMA</td>
-                                    <td className="px-3 py-1.5">: {settings?.headmaster_name || '................................'}</td>
+                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_name || '................................'}</td>
                                 </tr>
                                 <tr className="border-b border-slate-900">
                                     <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NIP</td>
-                                    <td className="px-3 py-1.5">: {settings?.headmaster_nip || '................................'}</td>
+                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_nip || '................................'}</td>
                                 </tr>
                                 <tr className="border-b border-slate-900">
                                     <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">PANGKAT/GOL</td>
-                                    <td className="px-3 py-1.5">: {settings?.headmaster_pangkat || '................................'}</td>
+                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_pangkat || '................................'}</td>
                                 </tr>
                                 <tr className="border-b border-slate-900">
                                     <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">JABATAN</td>
-                                    <td className="px-3 py-1.5">: {settings?.headmaster_jabatan || 'Kepala Madrasah'}</td>
+                                    <td className="px-3 py-1.5">: {profile?.school?.headmaster_jabatan || 'Kepala Madrasah'}</td>
                                 </tr>
                                 <tr>
                                     <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
-                                    <td className="px-3 py-1.5">: {settings?.school_name || '................................'}</td>
+                                    <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
                                 </tr>
                             </table>
                         </td>
@@ -125,7 +124,7 @@ export default async function LabulReportPage(props: {
                                 </tr>
                                 <tr>
                                     <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
-                                    <td className="px-3 py-1.5">: {settings?.school_name || '................................'}</td>
+                                    <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
                                 </tr>
                             </table>
                         </td>
@@ -181,10 +180,10 @@ export default async function LabulReportPage(props: {
             <ReportFooter
                 profileName={profile?.name}
                 profileNip={profile?.nip}
-                headmasterName={settings?.headmaster_name}
-                headmasterNip={settings?.headmaster_nip}
-                schoolName={settings?.school_name}
-                schoolAddress={settings?.school_address}
+                headmasterName={profile?.school?.headmaster_name}
+                headmasterNip={profile?.school?.headmaster_nip}
+                schoolName={profile?.school?.name}
+                schoolAddress={profile?.school?.address}
             />
         </div>
     );

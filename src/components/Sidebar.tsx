@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, BarChart2, User, PlusCircle, LogOut, Settings, Shield, Database } from "lucide-react";
+import { Home, ClipboardList, BarChart2, User, PlusCircle, LogOut, Settings, Shield, Database, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/auth/actions";
 
@@ -73,7 +73,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                         );
                     })}
 
-                    {profile?.role === 'admin' && (
+                    {['admin', 'super_admin'].includes(profile?.role) && (
                         <Link
                             href="/admin"
                             className={cn(
@@ -87,20 +87,26 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                             <span>Panel Admin</span>
                         </Link>
                     )}
+
+                    {profile?.role === 'super_admin' && (
+                        <Link
+                            href="/super-admin"
+                            className={cn(
+                                "flex items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold transition-all group mt-2 border border-dashed border-indigo-200",
+                                pathname.startsWith('/super-admin')
+                                    ? "bg-indigo-600 text-white"
+                                    : "text-indigo-500 hover:bg-indigo-50 hover:text-indigo-700"
+                            )}
+                        >
+                            <Globe size={20} className={cn("transition-transform group-hover:scale-110", pathname.startsWith('/super-admin') && "text-amber-300")} />
+                            <span>Super Admin</span>
+                        </Link>
+                    )}
                 </nav>
 
                 {/* Footer Nav */}
                 <div className="border-t border-slate-100 p-4 space-y-1.5">
-                    <Link
-                        href="/settings"
-                        className={cn(
-                            "flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold transition-all group",
-                            pathname === '/settings' ? "bg-slate-50 text-amber-600" : "text-slate-500 hover:bg-slate-50 hover:text-slate-900"
-                        )}
-                    >
-                        <Settings size={20} className={cn("transition-transform group-hover:rotate-45", pathname === '/settings' && "text-amber-600")} />
-                        <span>Pengaturan</span>
-                    </Link>
+
                     <button
                         onClick={() => logout()}
                         className="flex w-full items-center gap-3 rounded-xl px-4 py-3.5 text-sm font-bold text-red-500 transition-all hover:bg-red-50 group"
@@ -110,22 +116,7 @@ export default function Sidebar({ user, profile }: SidebarProps) {
                     </button>
                 </div>
 
-                {/* User Mini Profile */}
-                <div className="p-4 pt-0">
-                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-100">
-                        <div className="h-10 w-10 rounded-xl overflow-hidden shadow-sm">
-                            <img
-                                src={profile?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.name || user?.email}`}
-                                alt="Avatar"
-                                className="h-full w-full object-cover"
-                            />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                            <p className="text-xs font-black text-slate-900 truncate">{profile?.name || user?.email?.split('@')[0]}</p>
-                            <p className="text-[10px] font-bold text-slate-400 truncate uppercase">{profile?.role || 'Pengguna'}</p>
-                        </div>
-                    </div>
-                </div>
+
             </aside>
         </>
     );

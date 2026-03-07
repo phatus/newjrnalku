@@ -38,11 +38,14 @@ export async function createCategory(formData: FormData) {
 
     const { name, rhk_label, is_teaching } = validation.data;
 
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle();
+
     const { error } = await supabase.from('report_categories').insert({
         name,
         rhk_label,
         is_teaching,
-        user_id: user.id
+        user_id: user.id,
+        school_id: profile?.school_id
     });
 
     if (error) throw error;
@@ -117,9 +120,12 @@ export async function createClassRoom(formData: FormData) {
 
     const { name } = validation.data;
 
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle();
+
     const { error } = await supabase.from('class_rooms').insert({
         name,
-        user_id: user.id
+        user_id: user.id,
+        school_id: profile?.school_id
     });
 
     if (error) throw error;
@@ -167,9 +173,12 @@ export async function createBase(formData: FormData) {
 
     const { name } = validation.data;
 
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle();
+
     const { error } = await supabase.from('implementation_bases').insert({
         name,
-        user_id: user.id
+        user_id: user.id,
+        school_id: profile?.school_id
     });
 
     if (error) throw error;

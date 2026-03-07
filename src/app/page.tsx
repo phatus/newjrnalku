@@ -12,6 +12,8 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getDashboardStats, getRecentActivities, getMonthlyStats } from "@/app/activities/actions";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
+import UserIdentity from "@/components/UserIdentity";
 
 export default async function Dashboard() {
   const supabase = await createClient();
@@ -39,10 +41,11 @@ export default async function Dashboard() {
     console.error('Profile fetch error:', e);
   }
 
-  // Fetch School Settings
-  const { data: settings } = await supabase
-    .from('school_settings')
-    .select('school_name')
+  // Fetch School Info from schools table via profile
+  const { data: school } = await supabase
+    .from('schools')
+    .select('name')
+    .eq('id', profile?.school_id)
     .maybeSingle();
 
   const stats = await getDashboardStats();
@@ -63,23 +66,11 @@ export default async function Dashboard() {
       <header className="flex justify-between items-end">
         <div className="space-y-2">
           <p className="text-sm font-bold text-amber-600 uppercase tracking-widest">
-            {settings?.school_name || "Sekolah Menengah Kejuruan"}
+            {school?.name || "Sekolah"}
           </p>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Halo, {profile?.name?.split(' ')[0] || user.email?.split('@')[0]} 👋</h1>
         </div>
-        <div className="hidden sm:flex items-center gap-3">
-          <div className="text-right">
-            <p className="text-sm font-bold text-slate-900">{profile?.name || user.email?.split('@')[0]}</p>
-            <p className="text-xs font-medium text-slate-400 uppercase">{profile?.role || 'Pengguna'}</p>
-          </div>
-          <div className="h-14 w-14 rounded-2xl bg-slate-200 border-4 border-white shadow-xl overflow-hidden">
-            <img
-              src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${profile?.name || user.email}`}
-              alt="Avatar"
-              className="h-full w-full object-cover"
-            />
-          </div>
-        </div>
+        <UserIdentity profile={profile} user={user} />
       </header>
 
       {/* Stats Grid - Desktop Optimized */}

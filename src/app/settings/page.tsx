@@ -5,6 +5,7 @@ import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { updateSettings } from "@/app/activities/actions";
 import { cn } from "@/lib/utils";
+import { redirect } from "next/navigation";
 
 export default async function SettingsPage(props: {
     searchParams: Promise<{ message?: string; type?: string }>;
@@ -13,18 +14,38 @@ export default async function SettingsPage(props: {
     const message = searchParams.message;
     const type = searchParams.type;
 
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+        return redirect('/login');
+    }
+
     const adminSupa = createAdminClient();
 
-    const { data: settings } = await adminSupa
-        .from('school_settings')
-        .select('*')
+    // Check role
+    const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, school_id')
+        .eq('id', user.id)
         .maybeSingle();
+
+    if (!profile || !['admin', 'super_admin'].includes(profile.role)) {
+        return redirect('/');
+    }
+
+    const { data: school } = await supabase
+        .from('schools')
+        .select('*')
+        .eq('id', profile.school_id)
+        .maybeSingle();
+
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-50 pb-10">
             <div className="bg-white border-b border-slate-100 px-6 sm:px-10 py-8">
                 <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Konfigurasi</span>
-                <h1 className="text-3xl font-black text-slate-900 tracking-tight mt-1">Pengaturan Sekolah</h1>
+                <h1 className="text-3xl font-black text-slate-900 tracking-tight mt-1">Identitas Sekolah</h1>
             </div>
 
             <div className="max-w-4xl mx-auto w-full px-6 sm:px-10 mt-10">
@@ -35,6 +56,19 @@ export default async function SettingsPage(props: {
                     )}>
                         {type === 'error' ? <AlertCircle className="shrink-0" /> : <CheckCircle2 className="shrink-0" />}
                         <p className="text-sm font-black uppercase tracking-tight">{message}</p>
+                    </div>
+                )}
+
+                {/* Invite Code Box */}
+                {school?.invite_code && (
+                    <div className="bg-slate-900 rounded-[2rem] p-6 mb-6 flex items-center justify-between">
+                        <div>
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Kode Undangan Sekolah</p>
+                            <p className="text-slate-300 text-xs font-medium">Bagikan kode ini ke guru agar mereka bisa bergabung ke sekolah Anda.</p>
+                        </div>
+                        <div className="bg-white/10 border border-white/20 rounded-xl px-6 py-3 min-w-[140px] text-center">
+                            <p className="text-2xl font-black text-amber-400 tracking-[0.3em] uppercase">{school.invite_code}</p>
+                        </div>
                     </div>
                 )}
 
@@ -49,7 +83,7 @@ export default async function SettingsPage(props: {
                                 </label>
                                 <input
                                     name="school_name"
-                                    defaultValue={settings?.school_name}
+                                    defaultValue={school?.name}
                                     className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
                                     placeholder="Masukkan nama sekolah..."
                                 />
@@ -63,7 +97,7 @@ export default async function SettingsPage(props: {
                                 </label>
                                 <textarea
                                     name="school_address"
-                                    defaultValue={settings?.school_address}
+                                    defaultValue={school?.address}
                                     rows={3}
                                     className="w-full px-6 py-4 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all resize-none"
                                     placeholder="Alamat lengkap sekolah..."
@@ -79,7 +113,7 @@ export default async function SettingsPage(props: {
                                     </label>
                                     <input
                                         name="headmaster_name"
-                                        defaultValue={settings?.headmaster_name}
+                                        defaultValue={school?.headmaster_name}
                                         className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
                                     />
                                 </div>
@@ -92,7 +126,7 @@ export default async function SettingsPage(props: {
                                     </label>
                                     <input
                                         name="headmaster_nip"
-                                        defaultValue={settings?.headmaster_nip}
+                                        defaultValue={school?.headmaster_nip}
                                         className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
                                     />
                                 </div>
@@ -105,7 +139,7 @@ export default async function SettingsPage(props: {
                                     </label>
                                     <input
                                         name="headmaster_pangkat"
-                                        defaultValue={settings?.headmaster_pangkat}
+                                        defaultValue={school?.headmaster_pangkat}
                                         className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
                                     />
                                 </div>
@@ -118,7 +152,7 @@ export default async function SettingsPage(props: {
                                     </label>
                                     <input
                                         name="headmaster_jabatan"
-                                        defaultValue={settings?.headmaster_jabatan || 'Kepala Madrasah'}
+                                        defaultValue={school?.headmaster_jabatan || 'Kepala Madrasah'}
                                         className="w-full h-14 px-6 rounded-2xl bg-slate-50 border border-slate-100 font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all"
                                     />
                                 </div>

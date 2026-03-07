@@ -18,8 +18,7 @@ export default async function JurnalReportPage(props: {
 
     const adminSupa = createAdminClient();
 
-    const { data: profile } = await adminSupa.from('profiles').select('*').eq('id', user.id).maybeSingle();
-    const { data: settings } = await adminSupa.from('school_settings').select('*').maybeSingle();
+    const { data: profile } = await adminSupa.from('profiles').select('*, school:schools(*)').eq('id', user.id).maybeSingle();
 
     const lastDay = new Date(year, month, 0).getDate();
     const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
@@ -81,7 +80,7 @@ export default async function JurnalReportPage(props: {
                         <tr>
                             <td className="font-bold">Unit Kerja</td>
                             <td className="px-2">:</td>
-                            <td className="font-medium">{settings?.school_name || '................................'}</td>
+                            <td className="font-medium">{profile?.school?.name || '................................'}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -160,10 +159,10 @@ export default async function JurnalReportPage(props: {
             <ReportFooter
                 profileName={profile?.name}
                 profileNip={profile?.nip}
-                headmasterName={settings?.headmaster_name}
-                headmasterNip={settings?.headmaster_nip}
-                schoolName={settings?.school_name}
-                schoolAddress={settings?.school_address}
+                headmasterName={profile?.school?.headmaster_name}
+                headmasterNip={profile?.school?.headmaster_nip}
+                schoolName={profile?.school?.name}
+                schoolAddress={profile?.school?.address}
             />
         </div>
     );

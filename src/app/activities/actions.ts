@@ -25,11 +25,15 @@ export async function createActivity(formData: FormData) {
     const validatedData = validation.data
     const { category_id, activity_date, description, evidence_link, implementation_basis_id, student_count, teaching_hours, topic, student_outcome, class_room_ids } = validatedData
 
+    // Get user's school_id
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
+
     // Insert Activity
     const { data: activity, error: activityError } = await supabase
         .from('activities')
         .insert({
             user_id: user.id,
+            school_id: profile?.school_id,
             category_id,
             implementation_basis_id,
             activity_date,
@@ -77,12 +81,23 @@ export async function getCategories() {
     const supabase = await createClient()
     const { data: { user } = { user: null } } = await supabase.auth.getUser()
 
+    if (!user) {
+        const { data, error } = await supabase.from('report_categories').select('*').is('user_id', null).is('school_id', null).order('name')
+        if (error) throw error
+        return data
+    }
+
+    // Get user's school_id
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
+    const schoolId = profile?.school_id
+
     let query = supabase.from('report_categories').select('*')
 
-    if (user) {
-        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
+    if (schoolId) {
+        // Show: global (no school_id & no user_id) + school's + user's own
+        query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
     } else {
-        query = query.is('user_id', null)
+        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
     }
 
     const { data, error } = await query.order('name')
@@ -94,12 +109,21 @@ export async function getClassRooms() {
     const supabase = await createClient()
     const { data: { user } = { user: null } } = await supabase.auth.getUser()
 
+    if (!user) {
+        const { data, error } = await supabase.from('class_rooms').select('*').is('user_id', null).is('school_id', null).order('name')
+        if (error) throw error
+        return data
+    }
+
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
+    const schoolId = profile?.school_id
+
     let query = supabase.from('class_rooms').select('*')
 
-    if (user) {
-        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
+    if (schoolId) {
+        query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
     } else {
-        query = query.is('user_id', null)
+        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
     }
 
     const { data, error } = await query.order('name')
@@ -111,12 +135,21 @@ export async function getImplementationBases() {
     const supabase = await createClient()
     const { data: { user } = { user: null } } = await supabase.auth.getUser()
 
+    if (!user) {
+        const { data, error } = await supabase.from('implementation_bases').select('*').is('user_id', null).is('school_id', null).order('name')
+        if (error) throw error
+        return data
+    }
+
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
+    const schoolId = profile?.school_id
+
     let query = supabase.from('implementation_bases').select('*')
 
-    if (user) {
-        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
+    if (schoolId) {
+        query = query.or(`and(user_id.is.null,school_id.is.null),school_id.eq.${schoolId},user_id.eq.${user.id}`)
     } else {
-        query = query.is('user_id', null)
+        query = query.or(`user_id.is.null,user_id.eq.${user.id}`)
     }
 
     const { data, error } = await query.order('name')
@@ -126,12 +159,16 @@ export async function getImplementationBases() {
 
 export async function getRecentActivities() {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return []
+
     const { data } = await supabase
         .from('activities')
         .select(`
       *,
       category:report_categories(name, is_teaching)
     `)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(5)
     return data || []
@@ -208,7 +245,14 @@ export async function getDashboardStats() {
     }
 }
 export async function seedInitialData(formData: FormData) {
-    const supabase = createAdminClient()
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
+    const schoolId = profile?.school_id
+
+    const adminSupabase = createAdminClient()
 
     try {
         // 1. Seed Categories
@@ -221,9 +265,11 @@ export async function seedInitialData(formData: FormData) {
         ]
 
         for (const cat of categories) {
-            const { data } = await supabase.from('report_categories').select('id').eq('name', cat.name).maybeSingle()
+            let checkQuery = adminSupabase.from('report_categories').select('id').eq('name', cat.name)
+            if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
+            const { data } = await checkQuery.maybeSingle()
             if (!data) {
-                await supabase.from('report_categories').insert(cat)
+                await adminSupabase.from('report_categories').insert({ ...cat, school_id: schoolId })
             }
         }
 
@@ -234,9 +280,11 @@ export async function seedInitialData(formData: FormData) {
             { name: 'XII RPL 1' }, { name: 'XII RPL 2' },
         ]
         for (const cls of classes) {
-            const { data } = await supabase.from('class_rooms').select('id').eq('name', cls.name).maybeSingle()
+            let checkQuery = adminSupabase.from('class_rooms').select('id').eq('name', cls.name)
+            if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
+            const { data } = await checkQuery.maybeSingle()
             if (!data) {
-                await supabase.from('class_rooms').insert(cls)
+                await adminSupabase.from('class_rooms').insert({ ...cls, school_id: schoolId })
             }
         }
 
@@ -247,19 +295,21 @@ export async function seedInitialData(formData: FormData) {
             { name: 'Program Kerja Sekolah' },
         ]
         for (const base of bases) {
-            const { data } = await supabase.from('implementation_bases').select('id').eq('name', base.name).maybeSingle()
+            let checkQuery = adminSupabase.from('implementation_bases').select('id').eq('name', base.name)
+            if (schoolId) checkQuery = checkQuery.eq('school_id', schoolId)
+            const { data } = await checkQuery.maybeSingle()
             if (!data) {
-                await supabase.from('implementation_bases').insert(base)
+                await adminSupabase.from('implementation_bases').insert({ ...base, school_id: schoolId })
             }
         }
 
         revalidatePath('/activities/create')
-        return redirect('/activities/create?message=' + encodeURIComponent('Data dasar berhasil diinisialisasi!') + '&type=success')
-
     } catch (error) {
         console.error('Seed Error:', error)
         return redirect('/activities/create?message=' + encodeURIComponent('Gagal melakukan seeding data.') + '&type=error')
     }
+
+    return redirect('/activities/create?message=' + encodeURIComponent('Data dasar berhasil diinisialisasi!') + '&type=success')
 }
 
 export async function updateSettings(formData: FormData) {
@@ -268,9 +318,9 @@ export async function updateSettings(formData: FormData) {
 
     if (!user) throw new Error('Unauthorized')
 
-    // Check if user is admin
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
-    if (profile?.role !== 'admin') throw new Error('Forbidden')
+    // Check if user is admin or super_admin
+    const { data: profile } = await supabase.from('profiles').select('role, school_id').eq('id', user.id).maybeSingle()
+    if (!profile || !['admin', 'super_admin'].includes(profile.role)) throw new Error('Forbidden')
 
     const school_name = formData.get('school_name') as string
     const school_address = formData.get('school_address') as string
@@ -281,17 +331,17 @@ export async function updateSettings(formData: FormData) {
 
     const adminSupabase = createAdminClient()
     const { error } = await adminSupabase
-        .from('school_settings')
-        .upsert({
-            id: 1, // We only ever have one row for settings
-            school_name,
-            school_address,
+        .from('schools')
+        .update({
+            name: school_name,
+            address: school_address,
             headmaster_name,
             headmaster_nip,
             headmaster_pangkat,
             headmaster_jabatan,
             updated_at: new Date().toISOString()
         })
+        .eq('id', profile.school_id)
 
     if (error) {
         console.error('Settings Update Error:', error)

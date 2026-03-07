@@ -63,7 +63,7 @@ export default async function ReportsPage() {
                             <h4 className="text-sm font-black text-slate-900 tracking-tight">Analisis Cepat</h4>
                         </div>
 
-    <p className="text-[11px] font-bold text-slate-400 leading-relaxed uppercase tracking-wide">Mulai catat kegiatan Anda hari ini untuk melihat analisis kinerja di sini.</p>
+                        <p className="text-[11px] font-bold text-slate-400 leading-relaxed uppercase tracking-wide">Mulai catat kegiatan Anda hari ini untuk melihat analisis kinerja di sini.</p>
                     </div>
                 </div>
 

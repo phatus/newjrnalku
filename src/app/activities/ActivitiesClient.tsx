@@ -48,7 +48,7 @@ export default function ActivitiesClient({
     currentMonth,
     currentYear,
     message,
-    type
+    type,
 }: ActivitiesClientProps) {
     const router = useRouter();
     const [activities, setActivities] = useState<Activity[]>(initialActivities);
@@ -127,9 +127,11 @@ export default function ActivitiesClient({
                 </div>
 
                 <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-6">
-                    <div>
-                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Daftar Kegiatan Harian</h1>
-                        <p className="text-slate-500 mt-1 font-medium">Lihat dan kelola seluruh catatan aktivitas Anda.</p>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 flex-1">
+                        <div>
+                            <h1 className="text-3xl font-black text-slate-900 tracking-tight">Daftar Kegiatan Harian</h1>
+                            <p className="text-slate-500 mt-1 font-medium">Lihat dan kelola seluruh catatan aktivitas Anda.</p>
+                        </div>
                     </div>
 
                     <div className="flex flex-col md:flex-row items-start md:items-center gap-4">
@@ -325,7 +327,6 @@ export default function ActivitiesClient({
                 )}
             </div>
 
-            {/* Delete Confirmation Modal */}
             {showDeleteModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm transition-all animate-in fade-in duration-200">
                     <div className="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-slate-100">

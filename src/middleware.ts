@@ -2,20 +2,36 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
 
 export async function middleware(request: NextRequest) {
-    const { nextUrl, cookies } = request
+    const { nextUrl } = request
     const { supabase, response } = await updateSession(request)
     const { data: { user } } = await supabase.auth.getUser()
 
     const isLoginPage = nextUrl.pathname === '/login'
     const isRegisterPage = nextUrl.pathname === '/register'
     const isAuthCallback = nextUrl.pathname.startsWith('/auth')
+    const isOnboarding = nextUrl.pathname.startsWith('/onboarding')
 
+    // Not logged in → redirect to login (except public pages)
     if (!user && !isLoginPage && !isRegisterPage && !isAuthCallback) {
         return NextResponse.redirect(new URL('/login', request.url))
     }
 
+    // Already logged in → redirect away from login
     if (user && isLoginPage) {
         return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    // Logged in but no school → redirect to onboarding
+    if (user && !isOnboarding && !isAuthCallback && !isLoginPage && !isRegisterPage) {
+        const { data: profile } = await supabase
+            .from('profiles')
+            .select('school_id')
+            .eq('id', user.id)
+            .maybeSingle()
+
+        if (profile && !profile.school_id) {
+            return NextResponse.redirect(new URL('/onboarding', request.url))
+        }
     }
 
     return response

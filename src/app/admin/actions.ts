@@ -7,6 +7,10 @@ import { redirect } from 'next/navigation'
 
 // --- Categories ---
 export async function createCategory(formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user!.id).maybeSingle()
+
     const adminSupabase = createAdminClient()
     const name = formData.get('name') as string
     const rhk_label = formData.get('rhk_label') as string
@@ -14,7 +18,7 @@ export async function createCategory(formData: FormData) {
 
     const { error } = await adminSupabase
         .from('report_categories')
-        .insert({ name, rhk_label, is_teaching })
+        .insert({ name, rhk_label, is_teaching, school_id: profile?.school_id })
 
     if (error) throw new Error(error.message)
     revalidatePath('/admin/categories')
@@ -51,12 +55,16 @@ export async function updateCategory(id: number, formData: FormData) {
 
 // --- Classes ---
 export async function createClass(formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user!.id).maybeSingle()
+
     const adminSupabase = createAdminClient()
     const name = formData.get('name') as string
 
     const { error } = await adminSupabase
         .from('class_rooms')
-        .insert({ name })
+        .insert({ name, school_id: profile?.school_id })
 
     if (error) throw new Error(error.message)
     revalidatePath('/admin/classes')
@@ -77,12 +85,16 @@ export async function deleteClass(id: number) {
 
 // --- Implementation Bases ---
 export async function createBase(formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user!.id).maybeSingle()
+
     const adminSupabase = createAdminClient()
     const name = formData.get('name') as string
 
     const { error } = await adminSupabase
         .from('implementation_bases')
-        .insert({ name })
+        .insert({ name, school_id: profile?.school_id })
 
     if (error) throw new Error(error.message)
     revalidatePath('/admin/bases')
@@ -103,12 +115,19 @@ export async function deleteBase(id: number) {
 
 // --- Users ---
 export async function getUsers() {
-    const adminSupabase = createAdminClient()
-    const { data, error } = await adminSupabase
-        .from('profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    const { data: profile } = await supabase.from('profiles').select('school_id, role').eq('id', user!.id).maybeSingle()
 
+    const adminSupabase = createAdminClient()
+    let query = adminSupabase.from('profiles').select('*')
+
+    // super_admin sees all, admin sees only their school
+    if (profile?.role !== 'super_admin' && profile?.school_id) {
+        query = query.eq('school_id', profile.school_id)
+    }
+
+    const { data, error } = await query.order('created_at', { ascending: false })
     if (error) throw new Error(error.message)
     return data
 }
