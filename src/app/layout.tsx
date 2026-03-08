@@ -1,10 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import MobileNav from "@/components/MobileNav";
-import Sidebar from "@/components/Sidebar";
 import { createClient } from "@/utils/supabase/server";
 import { cn } from "@/lib/utils";
+import ClientLayout from "@/components/ClientLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -44,15 +43,9 @@ export default async function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={cn(inter.className, "bg-slate-50 text-slate-900 antialiased")}>
-        <div className="flex min-h-screen">
-          <Sidebar user={user} profile={profile} />
-          <main className={cn("flex-1 min-w-0 pb-24 sm:pb-0", user && "sm:pl-72")}>
-            <div className="max-w-7xl mx-auto h-full">
-              {children}
-            </div>
-          </main>
-        </div>
-        <MobileNav user={user} />
+        <ClientLayout user={user} profile={profile}>
+          {children}
+        </ClientLayout>
       </body>
     </html>
   );
