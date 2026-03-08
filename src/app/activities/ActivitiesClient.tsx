@@ -318,87 +318,98 @@ export default function ActivitiesClient({
                         </div>
 
                         {/* Mobile View (Cards) */}
-                        <div className="block md:hidden divide-y divide-slate-100">
+                        <div className="block md:hidden">
                             {sortedDates.map((date) => {
                                 const dateObj = new Date(date + 'T00:00:00');
                                 const dateStr = dateObj.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
                                 const dayStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
 
                                 return (
-                                    <div key={dateStr} className="flex flex-col">
-                                        {/* Date Divider (Mobile) */}
-                                        <div className="bg-slate-50/80 px-4 py-2 flex items-center gap-2 border-b border-slate-100 sticky top-0 z-10 backdrop-blur-sm">
-                                            <Calendar size={14} className="text-slate-400" />
-                                            <span className="text-xs font-bold text-slate-700">{dayStr}, {dateStr}</span>
+                                    <div key={date}>
+                                        {/* Date Header */}
+                                        <div className="bg-slate-100 px-4 py-2.5 flex items-center gap-2 sticky top-0 z-10">
+                                            <Calendar size={13} className="text-slate-400 shrink-0" />
+                                            <span className="text-[11px] font-black text-slate-600 uppercase tracking-widest">{dayStr}, {dateStr}</span>
+                                            <span className="ml-auto text-[10px] font-bold text-slate-400 bg-white px-2 py-0.5 rounded-full border border-slate-200">
+                                                {groupedActivities[date].length} kegiatan
+                                            </span>
                                         </div>
 
-                                        {/* Activities list for the date */}
-                                        <div className="divide-y divide-slate-50">
+                                        {/* Cards for this date */}
+                                        <div className="divide-y divide-slate-100">
                                             {groupedActivities[date].map((act: Activity) => (
-                                                <div key={act.id} className="p-4 flex flex-col gap-3">
-                                                    <div className="flex justify-between items-start gap-4">
+                                                <div key={act.id} className="bg-white">
+                                                    {/* Card Body */}
+                                                    <div className="px-4 pt-4 pb-3 flex flex-col gap-2.5">
+                                                        {/* Category Badge */}
                                                         <div className={cn(
-                                                            "inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-widest shrink-0",
+                                                            "self-start inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest",
                                                             act.category?.is_teaching ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-blue-50 text-blue-600 border border-blue-100"
                                                         )}>
                                                             {act.category?.is_teaching ? <BookOpen size={10} /> : <FileText size={10} />}
                                                             {act.category?.name || "Tanpa Kategori"}
                                                         </div>
 
-                                                        <div className="flex items-center gap-1">
-                                                            <Link
-                                                                href={`/activities/${act.id}/edit`}
-                                                                className="p-1.5 text-slate-400 hover:text-amber-600 bg-slate-50 rounded-lg"
-                                                            >
-                                                                <FileText size={14} />
-                                                            </Link>
-                                                            <button
-                                                                onClick={() => handleDeleteClick(act.id)}
-                                                                disabled={loadingId === act.id}
-                                                                className="p-1.5 text-red-400 hover:text-red-600 bg-red-50 rounded-lg disabled:opacity-50"
-                                                            >
-                                                                {loadingId === act.id ? <Loader2 className="animate-spin" size={14} /> : <Trash2 size={14} />}
-                                                            </button>
-                                                        </div>
+                                                        {/* Description */}
+                                                        <p className="text-sm font-bold text-slate-900 leading-snug">{act.description}</p>
+
+                                                        {/* Basis */}
+                                                        {act.basis?.name && (
+                                                            <div className="text-xs text-slate-400 flex items-center gap-1.5">
+                                                                <div className="w-1 h-1 rounded-full bg-slate-300 shrink-0" />
+                                                                {act.basis.name}
+                                                            </div>
+                                                        )}
+
+                                                        {/* Teaching Details */}
+                                                        {act.category?.is_teaching && (act.teaching_hours || (act.classes && act.classes.length > 0)) && (
+                                                            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                                                                {act.teaching_hours && (
+                                                                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-md">
+                                                                        <Clock size={10} className="text-amber-500" /> {act.teaching_hours} JP
+                                                                    </span>
+                                                                )}
+                                                                {act.classes && act.classes.map((c, idx) => (
+                                                                    <span key={idx} className="bg-amber-50 text-amber-700 border border-amber-100 px-2 py-1 rounded-md text-[10px] font-bold">
+                                                                        {c.class?.name}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        )}
                                                     </div>
 
-                                                    <p className="text-sm font-bold text-slate-900 leading-snug">{act.description}</p>
-
-                                                    {act.basis?.name && (
-                                                        <div className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-                                                            <div className="w-1 h-1 rounded-full bg-slate-300 shrink-0" />
-                                                            {act.basis.name}
-                                                        </div>
-                                                    )}
-
-                                                    {(act.category?.is_teaching || act.evidence_link) && (
-                                                        <div className="flex flex-wrap items-center gap-2 mt-1 pt-3 border-t border-slate-50">
-                                                            {act.category?.is_teaching && act.teaching_hours && (
-                                                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md w-fit">
-                                                                    <Clock size={10} className="text-amber-500" /> {act.teaching_hours} JP
-                                                                </span>
+                                                    {/* Card Footer: Actions */}
+                                                    <div className="flex items-center border-t border-slate-100">
+                                                        {act.evidence_link && (
+                                                            <a
+                                                                href={act.evidence_link}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-blue-600 text-xs font-bold hover:bg-blue-50 transition-colors border-r border-slate-100"
+                                                            >
+                                                                <ExternalLink size={13} /> Lihat Bukti
+                                                            </a>
+                                                        )}
+                                                        <Link
+                                                            href={`/activities/${act.id}/edit`}
+                                                            className={cn(
+                                                                "flex-1 flex items-center justify-center gap-1.5 py-2.5 text-slate-500 text-xs font-bold hover:bg-amber-50 hover:text-amber-600 transition-colors border-r border-slate-100",
                                                             )}
-                                                            {act.category?.is_teaching && act.classes && act.classes.length > 0 && (
-                                                                <div className="flex gap-1 flex-wrap">
-                                                                    {act.classes.map((c, idx) => (
-                                                                        <span key={idx} className="bg-white text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded text-[9px] font-bold shadow-sm inline-block">
-                                                                            {c.class?.name}
-                                                                        </span>
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                            {act.evidence_link && (
-                                                                <a
-                                                                    href={act.evidence_link}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="ml-auto inline-flex items-center gap-1 px-2 py-1 rounded-md bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors text-[10px] font-bold"
-                                                                >
-                                                                    <ExternalLink size={10} /> Bukti
-                                                                </a>
-                                                            )}
-                                                        </div>
-                                                    )}
+                                                        >
+                                                            <FileText size={13} /> Edit
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleDeleteClick(act.id)}
+                                                            disabled={loadingId === act.id}
+                                                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-red-500 text-xs font-bold hover:bg-red-50 transition-colors disabled:opacity-50"
+                                                        >
+                                                            {loadingId === act.id
+                                                                ? <Loader2 className="animate-spin" size={13} />
+                                                                : <Trash2 size={13} />
+                                                            }
+                                                            {loadingId === act.id ? "Menghapus..." : "Hapus"}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
