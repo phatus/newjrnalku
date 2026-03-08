@@ -202,127 +202,114 @@ export default function ActivitiesClient({
                         </Link>
                     </div>
                 ) : (
-                    <div className="space-y-8">
-                        {sortedDates.map((date) => {
-                            const dateObj = new Date(date + 'T00:00:00');
-                            const dateStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-                            const dayStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
-                            const dayNum = dateObj.getDate();
+                    <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                        <th className="p-4 pl-6 whitespace-nowrap">Tanggal</th>
+                                        <th className="p-4">Kategori</th>
+                                        <th className="p-4 min-w-[250px]">Kegiatan</th>
+                                        <th className="p-4">Rincian</th>
+                                        <th className="p-4 text-center">Bukti</th>
+                                        <th className="p-4 pr-6 text-right">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-sm font-medium text-slate-700 divide-y divide-slate-100">
+                                    {[...filteredActivities].sort((a, b) => new Date(b.activity_date).getTime() - new Date(a.activity_date).getTime()).map((act: Activity) => {
+                                        const dateObj = new Date(act.activity_date + 'T00:00:00');
+                                        const dateStr = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                                        const dayStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
 
-                            return (
-                                <div key={date} className="space-y-4">
-                                    {/* Date Header */}
-                                    <div className="sticky top-0 bg-slate-50 py-3 px-4 rounded-2xl border border-slate-100 flex items-center justify-between z-10">
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex flex-col items-center justify-center bg-white rounded-xl p-2 min-w-16 border border-slate-100">
-                                                <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{dayStr.slice(0, 3)}</span>
-                                                <span className="text-2xl font-black text-slate-900">{dayNum}</span>
-                                            </div>
-                                            <div>
-                                                <p className="text-sm font-black text-slate-900 uppercase tracking-widest">{dateStr}</p>
-                                                <p className="text-xs font-bold text-slate-400 mt-0.5">{groupedActivities[date].length} aktivitas</p>
-                                            </div>
-                                        </div>
-                                        <div className="hidden lg:block text-xs font-bold text-slate-400">
-                                            {groupedActivities[date].filter((a: Activity) => a.category?.is_teaching).length} KBM
-                                        </div>
-                                    </div>
-
-                                    {/* Activities for this date */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pl-0 lg:pl-20">
-                                        {groupedActivities[date].map((act: Activity) => (
-                                            <div
-                                                key={act.id}
-                                                className={cn(
-                                                    "rounded-2xl p-4 border transition-all hover:shadow-lg hover:-translate-y-0.5 group cursor-pointer",
-                                                    act.category?.is_teaching
-                                                        ? "bg-amber-50 border-amber-100 hover:border-amber-200"
-                                                        : "bg-blue-50 border-blue-100 hover:border-blue-200"
-                                                )}
-                                            >
-                                                <div className="flex gap-3">
-                                                    {/* Icon */}
+                                        return (
+                                            <tr key={act.id} className="hover:bg-slate-50/50 transition-colors group">
+                                                <td className="p-4 pl-6 whitespace-nowrap align-top">
+                                                    <div className="flex flex-col">
+                                                        <span className="font-bold text-slate-900">{dateStr}</span>
+                                                        <span className="text-xs text-slate-500">{dayStr}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="p-4 whitespace-nowrap align-top">
                                                     <div className={cn(
-                                                        "h-12 w-12 shrink-0 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110",
-                                                        act.category?.is_teaching ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600"
+                                                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest flex-wrap",
+                                                        act.category?.is_teaching ? "bg-amber-50 text-amber-600 border border-amber-100" : "bg-blue-50 text-blue-600 border border-blue-100"
                                                     )}>
-                                                        {act.category?.is_teaching ? <BookOpen size={20} /> : <FileText size={20} />}
+                                                        {act.category?.is_teaching ? <BookOpen size={12} /> : <FileText size={12} />}
+                                                        {act.category?.name || "Tanpa Kategori"}
                                                     </div>
-
-                                                    {/* Content */}
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-start justify-between gap-2 mb-2">
-                                                            <div className="flex-1 min-w-0">
-                                                                <span className={cn(
-                                                                    "inline-block px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest mb-1",
-                                                                    act.category?.is_teaching ? "bg-amber-200 text-amber-700" : "bg-blue-200 text-blue-700"
-                                                                )}>
-                                                                    {act.category?.name}
+                                                </td>
+                                                <td className="p-4 align-top">
+                                                    <p className="text-slate-900 font-bold leading-relaxed">{act.description}</p>
+                                                    {act.basis?.name && (
+                                                        <div className="text-xs text-slate-500 mt-2 flex items-center gap-1.5 font-medium">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-slate-300 shrink-0" />
+                                                            {act.basis.name}
+                                                        </div>
+                                                    )}
+                                                </td>
+                                                <td className="p-4 align-top">
+                                                    {act.category?.is_teaching ? (
+                                                        <div className="flex flex-col gap-2">
+                                                            {act.teaching_hours && (
+                                                                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg w-fit">
+                                                                    <Clock size={12} className="text-amber-500" /> {act.teaching_hours} JP
                                                                 </span>
-                                                                <h4 className="text-sm font-black text-slate-900 tracking-tight line-clamp-2">{act.description}</h4>
-                                                            </div>
-                                                            <div className="flex items-center gap-1 shrink-0">
-                                                                <Link
-                                                                    href={`/activities/${act.id}/edit`}
-                                                                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-white/50 text-slate-400 hover:text-amber-600 hover:bg-white transition-all lg:opacity-0 lg:group-hover:opacity-100 opacity-100"
-                                                                >
-                                                                    <FileText size={16} />
-                                                                </Link>
-                                                                <button
-                                                                    onClick={() => handleDeleteClick(act.id)}
-                                                                    disabled={loadingId === act.id}
-                                                                    className="h-8 w-8 flex items-center justify-center rounded-lg bg-red-100/50 text-red-400 hover:text-red-600 transition-colors lg:opacity-0 lg:group-hover:opacity-100 opacity-100 disabled:opacity-50"
-                                                                >
-                                                                    {loadingId === act.id ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />}
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Meta info */}
-                                                        <div className="space-y-2 text-xs">
-                                                            {act.category?.is_teaching && (
-                                                                <>
-                                                                    {act.teaching_hours && (
-                                                                        <div className="flex items-center gap-2 text-slate-700 font-bold">
-                                                                            <Clock size={12} className="text-amber-600" />
-                                                                            {act.teaching_hours} JP
-                                                                        </div>
-                                                                    )}
-                                                                    {act.classes && act.classes.length > 0 && (
-                                                                        <div className="flex flex-wrap gap-1">
-                                                                            {act.classes.map((c, idx) => (
-                                                                                <span key={idx} className="px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[8px] font-bold border border-amber-200">
-                                                                                    {c.class?.name}
-                                                                                </span>
-                                                                            ))}
-                                                                        </div>
-                                                                    )}
-                                                                </>
                                                             )}
-
-                                                            {act.basis?.name && (
-                                                                <p className="text-slate-600 font-medium truncate">📋 {act.basis?.name}</p>
-                                                            )}
-
-                                                            {act.evidence_link && (
-                                                                <a
-                                                                    href={act.evidence_link}
-                                                                    target="_blank"
-                                                                    rel="noopener noreferrer"
-                                                                    className="inline-flex items-center gap-1 text-blue-600 font-bold hover:underline"
-                                                                >
-                                                                    🔗 Bukti <ExternalLink size={10} />
-                                                                </a>
+                                                            {act.classes && act.classes.length > 0 && (
+                                                                <div className="flex gap-1.5 flex-wrap">
+                                                                    {act.classes.map((c, idx) => (
+                                                                        <span key={idx} className="bg-white text-slate-600 border border-slate-200 px-2 py-0.5 rounded-md text-[10px] font-bold shadow-sm inline-block">
+                                                                            {c.class?.name}
+                                                                        </span>
+                                                                    ))}
+                                                                </div>
                                                             )}
                                                         </div>
+                                                    ) : (
+                                                        <span className="text-slate-300 text-xs italic">-</span>
+                                                    )}
+                                                </td>
+                                                <td className="p-4 align-top text-center">
+                                                    {act.evidence_link ? (
+                                                        <a
+                                                            href={act.evidence_link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex flex-col items-center justify-center p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all mx-auto group/btn"
+                                                            title="Lihat Bukti"
+                                                        >
+                                                            <ExternalLink size={16} className="group-hover/btn:scale-110 transition-transform" />
+                                                            <span className="sr-only">Lihat Bukti</span>
+                                                        </a>
+                                                    ) : (
+                                                        <span className="text-slate-300 inline-block mt-2">-</span>
+                                                    )}
+                                                </td>
+                                                <td className="p-4 pr-6 align-top">
+                                                    <div className="flex items-center justify-end gap-2 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
+                                                        <Link
+                                                            href={`/activities/${act.id}/edit`}
+                                                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-amber-600 hover:border-amber-200 hover:bg-amber-50 transition-all shadow-sm"
+                                                            title="Edit"
+                                                        >
+                                                            <FileText size={16} />
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleDeleteClick(act.id)}
+                                                            disabled={loadingId === act.id}
+                                                            className="w-9 h-9 flex items-center justify-center rounded-lg bg-white border border-slate-200 text-slate-400 hover:text-red-600 hover:border-red-200 hover:bg-red-50 transition-all shadow-sm disabled:opacity-50"
+                                                            title="Hapus"
+                                                        >
+                                                            {loadingId === act.id ? <Loader2 className="animate-spin" size={16} /> : <Trash2 size={16} />}
+                                                        </button>
                                                     </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            );
-                        })}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 )}
             </div>
