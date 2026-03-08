@@ -216,18 +216,23 @@ export default function ActivitiesClient({
                                     </tr>
                                 </thead>
                                 <tbody className="text-sm font-medium text-slate-700 divide-y divide-slate-100">
-                                    {[...filteredActivities].sort((a, b) => new Date(b.activity_date).getTime() - new Date(a.activity_date).getTime()).map((act: Activity) => {
-                                        const dateObj = new Date(act.activity_date + 'T00:00:00');
+                                    {sortedDates.flatMap((date) => {
+                                        const dateObj = new Date(date + 'T00:00:00');
                                         const dateStr = dateObj.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
                                         const dayStr = dateObj.toLocaleDateString('id-ID', { weekday: 'long' });
 
-                                        return (
-                                            <tr key={act.id} className="hover:bg-slate-50/50 transition-colors group">
+                                        return groupedActivities[date].map((act: Activity, index: number) => (
+                                            <tr key={act.id} className={cn(
+                                                "hover:bg-slate-50/50 transition-colors group",
+                                                index === 0 ? "border-t-2 border-slate-100" : ""
+                                            )}>
                                                 <td className="p-4 pl-6 whitespace-nowrap align-top">
-                                                    <div className="flex flex-col">
-                                                        <span className="font-bold text-slate-900">{dateStr}</span>
-                                                        <span className="text-xs text-slate-500">{dayStr}</span>
-                                                    </div>
+                                                    {index === 0 ? (
+                                                        <div className="flex flex-col">
+                                                            <span className="font-bold text-slate-900">{dateStr}</span>
+                                                            <span className="text-xs text-slate-500">{dayStr}</span>
+                                                        </div>
+                                                    ) : null}
                                                 </td>
                                                 <td className="p-4 whitespace-nowrap align-top">
                                                     <div className={cn(
@@ -305,7 +310,7 @@ export default function ActivitiesClient({
                                                     </div>
                                                 </td>
                                             </tr>
-                                        );
+                                        ));
                                     })}
                                 </tbody>
                             </table>
