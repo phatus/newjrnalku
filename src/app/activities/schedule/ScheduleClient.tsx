@@ -52,7 +52,11 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
             try {
                 const result = await deleteSchedule(id);
                 console.log("DEBUG: Delete result", result);
-                router.refresh();
+                if (result?.success) {
+                    router.refresh();
+                } else {
+                    alert(`Gagal menghapus: ${result?.error || 'Terjadi kesalahan sistem'}`);
+                }
             } catch (err: any) {
                 console.error("DEBUG: Delete error", err);
                 alert(`Gagal menghapus: ${err.message}`);

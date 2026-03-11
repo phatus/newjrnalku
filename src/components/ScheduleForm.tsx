@@ -79,20 +79,26 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
                     setLoading(true);
                     startTransition(async () => {
                         try {
+                            let result;
                             if (initialData) {
                                 console.log("DEBUG: Calling updateSchedule for", initialData.id);
-                                await updateSchedule(initialData.id, formData);
-                                alert("Jadwal diperbarui!");
-                                router.refresh();
-                                if (onCancel) onCancel();
+                                result = await updateSchedule(initialData.id, formData);
                             } else {
                                 console.log("DEBUG: Calling saveSchedule");
-                                await saveSchedule(formData);
-                                alert("Jadwal disimpan!");
+                                result = await saveSchedule(formData);
+                            }
+
+                            if (result?.success) {
+                                alert(initialData ? "Jadwal diperbarui!" : "Jadwal disimpan!");
                                 router.refresh();
-                                setSelectedClassIds([]);
-                                setSelectedDays([]);
-                                setSelectedCategoryId("");
+                                if (initialData && onCancel) onCancel();
+                                if (!initialData) {
+                                    setSelectedClassIds([]);
+                                    setSelectedDays([]);
+                                    setSelectedCategoryId("");
+                                }
+                            } else {
+                                alert(`Gagal menyimpan: ${result?.error || 'Terjadi kesalahan sistem'}`);
                             }
                         } catch (err: any) {
                             console.error('Submit Error:', err);
