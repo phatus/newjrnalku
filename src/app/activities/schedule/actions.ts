@@ -114,6 +114,61 @@ export async function deleteSchedule(id: string) {
     revalidatePath('/activities/schedule')
 }
 
+export async function updateSchedule(id: string, formData: FormData) {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) throw new Error('Unauthorized')
+
+    const days_of_week = (formData.get('days_of_week') as string || '').split(',').filter(id => id).map(id => parseInt(id, 10))
+    const category_id = parseInt(formData.get('category_id') as string, 10)
+    const implementation_basis_id = parseInt(formData.get('implementation_basis_id') as string, 10) || null
+    const topic = formData.get('topic') as string
+    const description = formData.get('description') as string || null
+    const teaching_hours = formData.get('teaching_hours') as string || null
+    const class_room_ids = (formData.get('class_room_ids') as string || '').split(',').filter(id => id).map(id => parseInt(id, 10))
+
+    if (days_of_week.length === 0) throw new Error('Harap pilih minimal satu hari')
+    // Note: Since we are updating a single record by ID, we only use the first day if multiple were somehow selected, 
+    // but typically edit is only for one record. If multiple days were intended to be updated together, 
+    // we would need a different approach (like bulk edit), but for now, we follow the ID.
+    const day_of_week = days_of_week[0]
+
+    const { error: updateError } = await supabase
+        .from('activity_schedules')
+        .update({
+            category_id,
+            implementation_basis_id,
+            day_of_week,
+            topic,
+            description,
+            teaching_hours
+        })
+        .eq('id', id)
+        .eq('user_id', user.id)
+
+    if (updateError) throw updateError
+
+    // Handle classes: Delete and Re-insert
+    const adminSupabase = createAdminClient()
+    const { error: deletePivotError } = await adminSupabase.from('schedule_class_rooms').delete().eq('schedule_id', id)
+    if (deletePivotError) throw deletePivotError
+
+    if (class_room_ids.length > 0) {
+        const pivotData = class_room_ids.map(class_id => ({
+            schedule_id: id,
+            class_room_id: class_id
+        }))
+        const { error: pivotError } = await adminSupabase.from('schedule_class_rooms').insert(pivotData)
+        if (pivotError) {
+            console.error('updateSchedule Pivot Error:', pivotError)
+            throw new Error(`Gagal memperbarui data kelas: ${pivotError.message}`)
+        }
+    }
+
+    revalidatePath('/activities/schedule')
+}
+
 export async function convertScheduleToActivity(scheduleId: string, date: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
