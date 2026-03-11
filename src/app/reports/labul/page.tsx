@@ -81,7 +81,7 @@ export default async function LabulReportPage(props: {
     const monthName = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][month - 1];
 
     return (
-        <div className="bg-white min-h-screen p-10 font-sans text-slate-900 max-w-7xl mx-auto printable-area">
+        <div className="bg-white min-h-screen p-10 print:p-0 font-sans text-slate-900 max-w-7xl mx-auto printable-area">
             <div className="no-print mb-8 flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Pratinjau: LABUL — {monthName} {year}</p>
                 <div className="flex gap-3">
@@ -96,7 +96,7 @@ export default async function LabulReportPage(props: {
             {/* Two Column Header Table */}
             <table className="w-full border-collapse border border-slate-900 text-[10px] mb-6">
                 <thead>
-                    <tr className="bg-amber-100">
+                    <tr className="bg-amber-100/50">
                         <th className="border border-slate-900 px-4 py-2.5 w-1/2 text-center font-black">Pejabat Penilai</th>
                         <th className="border border-slate-900 px-4 py-2.5 w-1/2 text-center font-black">ASN yang Melaporkan</th>
                     </tr>
@@ -162,7 +162,7 @@ export default async function LabulReportPage(props: {
             {/* Main Data Table */}
             <table className="w-full border-collapse border border-slate-900 text-[10px] mb-4">
                 <thead>
-                    <tr className="bg-amber-100">
+                    <tr className="bg-amber-100/50">
                         <th className="border border-slate-900 px-2 py-3 font-bold uppercase w-10">NO</th>
                         <th className="border border-slate-900 px-3 py-3 font-bold uppercase text-center">RENCANA HASIL KERJA (RHK)</th>
                         <th className="border border-slate-900 px-3 py-3 font-bold uppercase text-center">URAIAN KEGIATAN</th>
@@ -188,7 +188,7 @@ export default async function LabulReportPage(props: {
                             }
 
                             return (
-                                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
                                     {isNewRHK ? (
                                         <td rowSpan={rhkSpans[item.rhk]} className="border border-slate-900 px-2 py-3 text-center font-bold align-top">
                                             {sequenceNumber}
@@ -227,7 +227,7 @@ export default async function LabulReportPage(props: {
                 </tbody>
             </table>
 
-            <p className="text-center text-[9px] text-slate-500 mb-16">* Halaman berlanjut jika ada</p>
+            <p className="text-center text-[9px] text-slate-500 mb-8 print:mb-4">* Halaman berlanjut jika ada</p>
 
             <ReportFooter
                 profileName={profile?.name}

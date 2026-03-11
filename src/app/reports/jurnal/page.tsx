@@ -45,7 +45,7 @@ export default async function JurnalReportPage(props: {
     const monthName = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][month - 1];
 
     return (
-        <div className="bg-white min-h-screen p-10 font-sans text-slate-900 max-w-5xl mx-auto printable-area">
+        <div className="bg-white min-h-screen p-10 print:p-0 font-sans text-slate-900 max-w-5xl mx-auto printable-area">
             <div className="no-print mb-8 flex justify-between items-center bg-slate-50 p-4 rounded-2xl border border-slate-200">
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Pratinjau: JURNAL MENGAJAR — {monthName} {year}</p>
                 <div className="flex gap-3">
@@ -89,7 +89,7 @@ export default async function JurnalReportPage(props: {
             {/* Main Data Table */}
             <table className="w-full border-collapse border border-slate-900 text-[10px] mb-4">
                 <thead>
-                    <tr className="bg-amber-100">
+                    <tr className="bg-amber-100/50">
                         <th className="border border-slate-900 px-2 py-3 font-bold w-8">No</th>
                         <th className="border border-slate-900 px-2 py-3 font-bold w-28">Hari / Tgl</th>
                         <th className="border border-slate-900 px-2 py-3 font-bold w-24">Kelas</th>
@@ -127,7 +127,7 @@ export default async function JurnalReportPage(props: {
                             const classNames = act.classes?.map((c: any) => c.class?.name).join(', ');
 
                             return (
-                                <tr key={act.id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
+                                <tr key={act.id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
                                     {isNewDate && (
                                         <>
                                             <td rowSpan={dateSpans[act.activity_date]} className="border border-slate-900 px-2 py-2 text-center align-top font-bold">
@@ -154,7 +154,7 @@ export default async function JurnalReportPage(props: {
                 </tbody>
             </table>
 
-            <p className="text-center text-[9px] text-slate-500 mb-16">* Halaman berlanjut jika ada</p>
+            <p className="text-center text-[9px] text-slate-500 mb-8 print:mb-4">* Halaman berlanjut jika ada</p>
 
             <ReportFooter
                 profileName={profile?.name}

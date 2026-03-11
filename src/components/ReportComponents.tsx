@@ -27,6 +27,27 @@ export function BackButton() {
 export function ReportHeader({ schoolName, schoolAddress }: { schoolName?: string; schoolAddress?: string }) {
     return (
         <div className="text-center mb-6 pb-4 border-b-2 border-slate-900">
+            <style jsx global>{`
+                @media print {
+                    @page {
+                        margin: 1.5cm;
+                    }
+                    .no-print {
+                        display: none !important;
+                    }
+                    tr {
+                        page-break-inside: avoid;
+                    }
+                    .printable-area {
+                        padding: 0 !important;
+                        margin: 0 !important;
+                        max-width: 100% !important;
+                    }
+                    .signature-block {
+                        page-break-inside: avoid;
+                    }
+                }
+            `}</style>
             <p className="text-sm font-bold uppercase tracking-wide">{schoolName || 'Madrasah'}</p>
             <p className="text-xs text-slate-600">{schoolAddress || ''}</p>
             <div className="mt-3 h-px w-full bg-slate-300" />
@@ -54,11 +75,11 @@ export function ReportFooter({ headmasterName, headmasterNip, profileName, profi
     if (!location) location = 'Pacitan';
 
     return (
-        <div className="mt-20 space-y-12 border-t border-slate-200 pt-12 text-sm">
+        <div className="mt-12 print:mt-8 space-y-10 signature-block border-t border-slate-100 pt-8 text-sm">
             <div className="grid grid-cols-2 gap-8">
                 {/* Left: Employee Signature */}
                 <div className="flex flex-col items-center">
-                    <div className="space-y-24">
+                    <div className="space-y-16 print:space-y-12">
                         <div className="space-y-1 text-center">
                             <p className="font-bold tracking-wide">Yang membuat laporan,</p>
                             <p className="text-[11px] font-medium text-slate-600">Pegawai</p>
@@ -72,9 +93,9 @@ export function ReportFooter({ headmasterName, headmasterNip, profileName, profi
 
                 {/* Right: Chief Approver */}
                 <div className="flex flex-col items-center">
-                    <div className="space-y-20">
+                    <div className="space-y-16 print:space-y-12">
                         <div className="text-center space-y-1">
-                            <p className="font-bold text-right">{location}, {today}</p>
+                            <p className="font-bold">{location}, {today}</p>
                             <p className="font-bold tracking-wide">Mengetahui,</p>
                             <p className="text-[11px] font-medium text-slate-600">Kepala {schoolName || 'Sekolah'}</p>
                         </div>
