@@ -15,26 +15,28 @@ interface ScheduleItem {
     schedule_class_rooms?: { class_rooms: { name: string } }[]
 }
 
-export default function ScheduleQuickAction({ initialSchedules }: { initialSchedules: any[] }) {
+export default function ScheduleQuickAction({ initialSchedules, selectedDate }: { initialSchedules: any[], selectedDate: string }) {
     const [todaySchedules, setTodaySchedules] = useState<ScheduleItem[]>([])
     const [loading, setLoading] = useState<string | null>(null)
     const [completed, setCompleted] = useState<string[]>([])
 
     useEffect(() => {
-        const today = new Date().getDay()
-        const filtered = initialSchedules.filter(s => s.day_of_week === today)
+        // Parse the selectedDate to get the day of the week (0-6)
+        const dateObj = new Date(selectedDate)
+        const dayOfWeek = dateObj.getDay()
+        
+        const filtered = initialSchedules.filter(s => s.day_of_week === dayOfWeek)
         setTodaySchedules(filtered)
 
         // Mark as completed if already confirmed on server
         const alreadyConfirmed = filtered.filter(s => s.is_confirmed_today).map(s => s.id)
         setCompleted(alreadyConfirmed)
-    }, [initialSchedules])
+    }, [initialSchedules, selectedDate])
 
     const handleConfirm = async (id: string) => {
         setLoading(id)
         try {
-            const todayStr = new Date().toISOString().split('T')[0]
-            const result = await convertScheduleToActivity(id, todayStr) as any
+            const result = await convertScheduleToActivity(id, selectedDate) as any
 
             if (result && result.success === false) {
                 alert(result.error || 'Terjadi kesalahan.')
@@ -51,6 +53,8 @@ export default function ScheduleQuickAction({ initialSchedules }: { initialSched
             setLoading(null)
         }
     }
+
+    const isToday = selectedDate === new Date().toISOString().split('T')[0]
 
     if (todaySchedules.length === 0) {
         if (initialSchedules.length === 0) {
@@ -75,10 +79,10 @@ export default function ScheduleQuickAction({ initialSchedules }: { initialSched
             <div className="flex items-center justify-between px-2">
                 <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
                     <Calendar className="text-amber-500" size={20} />
-                    Jadwal Anda Hari Ini
+                    {isToday ? 'Jadwal Anda Hari Ini' : `Jadwal: ${new Date(selectedDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}`}
                 </h2>
                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full">
-                    {new Date().toLocaleDateString('id-ID', { weekday: 'long' })}
+                    {new Date(selectedDate).toLocaleDateString('id-ID', { weekday: 'long' })}
                 </span>
             </div>
 

@@ -5,14 +5,14 @@ import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-export async function getSchedules() {
-    console.log('SERVER ACTION: getSchedules started')
+export async function getSchedules(selectedDate?: string) {
+    console.log('SERVER ACTION: getSchedules started', selectedDate)
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) return []
 
-    const today = new Date().toISOString().split('T')[0]
+    const checkDate = selectedDate || new Date().toISOString().split('T')[0]
 
     try {
         // Use admin client to bypass RLS on pivot table schedule_class_rooms
@@ -32,15 +32,15 @@ export async function getSchedules() {
             return []
         }
 
-        // Check which ones are already confirmed for today
-        const { data: todayActivities } = await supabase
+        // Check which ones are already confirmed for the checkDate
+        const { data: dateActivities } = await supabase
             .from('activities')
             .select('schedule_id')
             .eq('user_id', user.id)
-            .eq('activity_date', today)
+            .eq('activity_date', checkDate)
             .not('schedule_id', 'is', null)
 
-        const confirmedIds = new Set(todayActivities?.map(a => a.schedule_id).filter(Boolean) || [])
+        const confirmedIds = new Set(dateActivities?.map(a => a.schedule_id).filter(Boolean) || [])
 
         return (data || []).map(s => ({
             ...s,

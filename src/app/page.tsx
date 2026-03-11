@@ -18,7 +18,16 @@ import { getSchedules } from "@/app/activities/schedule/actions";
 import ScheduleQuickAction from "@/components/ScheduleQuickAction";
 import { Settings } from "lucide-react";
 
-export default async function Dashboard() {
+import DashboardDateFilter from "@/components/DashboardDateFilter";
+
+export default async function Dashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const resolvedParams = await searchParams;
+  const selectedDate = (resolvedParams.date as string) || new Date().toISOString().split('T')[0];
+
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -53,7 +62,7 @@ export default async function Dashboard() {
 
   const stats = await getDashboardStats();
   const recentActivities = await getRecentActivities();
-  const schedules = await getSchedules();
+  const schedules = await getSchedules(selectedDate);
   type MonthlyStats = { counts: number[]; raw: any[] };
   const monthlyStats: MonthlyStats = await getMonthlyStats();
 
@@ -67,7 +76,7 @@ export default async function Dashboard() {
   return (
     <div className="p-4 sm:p-10 space-y-10">
       {/* Header - Desktop Optimized */}
-      <header className="flex justify-between items-end">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <p className="text-sm font-bold text-amber-600 uppercase tracking-widest">
@@ -80,11 +89,15 @@ export default async function Dashboard() {
           </div>
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">Halo, {profile?.name?.split(' ')[0] || user.email?.split('@')[0]} 👋</h1>
         </div>
-        <UserIdentity profile={profile} user={user} />
+        
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <DashboardDateFilter selectedDate={selectedDate} />
+          <UserIdentity profile={profile} user={user} />
+        </div>
       </header>
 
       {/* Quick Schedule Confirmation */}
-      <ScheduleQuickAction initialSchedules={schedules} />
+      <ScheduleQuickAction initialSchedules={schedules} selectedDate={selectedDate} />
 
       {/* Stats Grid - Desktop Optimized */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
