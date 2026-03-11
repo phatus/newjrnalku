@@ -54,34 +54,42 @@ export function ReportFooter({ headmasterName, headmasterNip, profileName, profi
     if (!location) location = 'Pacitan';
 
     return (
-        <div className="mt-12 print:mt-8 space-y-10 signature-block border-t border-slate-100 pt-8 text-sm">
-            <div className="grid grid-cols-2 gap-8">
-                {/* Left: Employee Signature */}
+        <div className="mt-12 print:mt-8 signature-block border-t border-slate-100 pt-8 text-sm">
+            <div className="flex justify-end mb-1">
+                <p className="font-bold w-1/2 text-center ml-auto pl-8">{location}, {today}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-8 items-start">
+                {/* Left: Employee Signature Header */}
                 <div className="flex flex-col items-center">
-                    <div className="space-y-16 print:space-y-12">
-                        <div className="space-y-1 text-center">
-                            <p className="font-bold tracking-wide">Yang membuat laporan,</p>
-                            <p className="text-[11px] font-medium text-slate-600">Pegawai</p>
-                        </div>
-                        <div className="space-y-1 text-center">
-                            <p className="font-black underline min-w-48">{profileName || '................................'}</p>
-                            <p className="font-bold text-[10px]">NIP. {profileNip || '................................'}</p>
-                        </div>
+                    <div className="space-y-1 text-center">
+                        <p className="font-bold tracking-wide">Yang membuat laporan,</p>
+                        <p className="text-[11px] font-medium text-slate-600">Pegawai</p>
                     </div>
                 </div>
 
-                {/* Right: Chief Approver */}
+                {/* Right: Chief Approver Header */}
                 <div className="flex flex-col items-center">
-                    <div className="space-y-16 print:space-y-12">
-                        <div className="text-center space-y-1">
-                            <p className="font-bold">{location}, {today}</p>
-                            <p className="font-bold tracking-wide">Mengetahui,</p>
-                            <p className="text-[11px] font-medium text-slate-600">Kepala {schoolName || 'Sekolah'}</p>
-                        </div>
-                        <div className="space-y-1 text-center">
-                            <p className="font-black underline min-w-48">{headmasterName || '................................'}</p>
-                            <p className="font-bold text-[10px]">NIP. {headmasterNip || '................................'}</p>
-                        </div>
+                    <div className="text-center space-y-1">
+                        <p className="font-bold tracking-wide">Mengetahui,</p>
+                        <p className="text-[11px] font-medium text-slate-600">Kepala {schoolName || 'Sekolah'}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-8 mt-16 print:mt-12">
+                {/* Left: Employee Name */}
+                <div className="flex flex-col items-center">
+                    <div className="space-y-1 text-center">
+                        <p className="font-black underline min-w-48">{profileName || '................................'}</p>
+                        <p className="font-bold text-[10px]">NIP. {profileNip || '................................'}</p>
+                    </div>
+                </div>
+
+                {/* Right: Chief Approver Name */}
+                <div className="flex flex-col items-center">
+                    <div className="space-y-1 text-center">
+                        <p className="font-black underline min-w-48">{headmasterName || '................................'}</p>
+                        <p className="font-bold text-[10px]">NIP. {headmasterNip || '................................'}</p>
                     </div>
                 </div>
             </div>
