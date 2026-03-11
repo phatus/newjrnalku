@@ -71,33 +71,33 @@ export default async function CatkinReportPage(props: {
             <p className="text-center text-xs font-bold text-slate-600 mb-6">(CATKIN) — {monthName} {year}</p>
 
             {/* Employee Information Section */}
-            <div className="mb-6 text-sm">
-                <table className="w-full text-[11px] leading-relaxed">
+            <div className="mb-6 text-sm signature-block">
+                <table className="w-full text-[11px] leading-tight">
                     <tbody>
                         <tr>
-                            <td className="font-bold w-32">Nama Pegawai</td>
-                            <td className="px-2">:</td>
-                            <td className="font-medium">{profile?.name || '................................'}</td>
+                            <td className="font-bold w-32 py-0.5">Nama Pegawai</td>
+                            <td className="px-2 py-0.5">:</td>
+                            <td className="font-medium py-0.5">{profile?.name || '................................'}</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">NIP</td>
-                            <td className="px-2">:</td>
-                            <td className="font-medium">{profile?.nip || '................................'}</td>
+                            <td className="font-bold py-0.5">NIP</td>
+                            <td className="px-2 py-0.5">:</td>
+                            <td className="font-medium py-0.5">{profile?.nip || '................................'}</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">Pangkat / Gol.</td>
-                            <td className="px-2">:</td>
-                            <td className="font-medium">{profile?.pangkat_gol || '................................'}</td>
+                            <td className="font-bold py-0.5">Pangkat / Gol.</td>
+                            <td className="px-2 py-0.5">:</td>
+                            <td className="font-medium py-0.5">{profile?.pangkat_gol || '................................'}</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">Jabatan</td>
-                            <td className="px-2">:</td>
-                            <td className="font-medium">{profile?.jabatan || '................................'}</td>
+                            <td className="font-bold py-0.5">Jabatan</td>
+                            <td className="px-2 py-0.5">:</td>
+                            <td className="font-medium py-0.5">{profile?.jabatan || '................................'}</td>
                         </tr>
                         <tr>
-                            <td className="font-bold">Unit Kerja</td>
-                            <td className="px-2">:</td>
-                            <td className="font-medium">{profile?.school?.name || '................................'}</td>
+                            <td className="font-bold py-0.5">Unit Kerja</td>
+                            <td className="px-2 py-0.5">:</td>
+                            <td className="font-medium py-0.5">{profile?.school?.name || '................................'}</td>
                         </tr>
                     </tbody>
                 </table>

@@ -94,70 +94,72 @@ export default async function LabulReportPage(props: {
             <p className="text-center text-sm font-bold text-slate-600 mb-8">{monthName} {year}</p>
 
             {/* Two Column Header Table */}
-            <table className="w-full border-collapse border border-slate-900 text-[10px] mb-6">
-                <thead>
-                    <tr className="bg-amber-100/50">
-                        <th className="border border-slate-900 px-4 py-2.5 w-1/2 text-center font-black">Pejabat Penilai</th>
-                        <th className="border border-slate-900 px-4 py-2.5 w-1/2 text-center font-black">ASN yang Melaporkan</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td className="border border-slate-900 p-0">
-                            <table className="w-full border-collapse text-[9px]">
-                                <tbody>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NAMA</td>
-                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_name || '................................'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NIP</td>
-                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_nip || '................................'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">PANGKAT/GOL</td>
-                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_pangkat || '................................'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">JABATAN</td>
-                                        <td className="px-3 py-1.5">: {profile?.school?.headmaster_jabatan || 'Kepala Madrasah'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
-                                        <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                        <td className="border border-slate-900 p-0">
-                            <table className="w-full border-collapse text-[9px]">
-                                <tbody>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NAMA</td>
-                                        <td className="px-3 py-1.5">: {profile?.name || '................................'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">NIP</td>
-                                        <td className="px-3 py-1.5">: {profile?.nip || '................................'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">PANGKAT/GOL</td>
-                                        <td className="px-3 py-1.5">: {profile?.pangkat_gol || '................................'}</td>
-                                    </tr>
-                                    <tr className="border-b border-slate-900">
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">JABATAN</td>
-                                        <td className="px-3 py-1.5">: {profile?.jabatan || '................................'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-3 py-1.5 w-28 font-bold border-r border-slate-900">Unit Kerja</td>
-                                        <td className="px-3 py-1.5">: {profile?.school?.name || '................................'}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div className="signature-block">
+                <table className="w-full border-collapse border border-slate-900 text-[10px] mb-6">
+                    <thead>
+                        <tr className="bg-amber-100/50">
+                            <th className="border border-slate-900 px-4 py-2 w-1/2 text-center font-black">Pejabat Penilai</th>
+                            <th className="border border-slate-900 px-4 py-2 w-1/2 text-center font-black">ASN yang Melaporkan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td className="border border-slate-900 p-0">
+                                <table className="w-full border-collapse text-[9px]">
+                                    <tbody>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">NAMA</td>
+                                            <td className="px-3 py-1">: {profile?.school?.headmaster_name || '................................'}</td>
+                                        </tr>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">NIP</td>
+                                            <td className="px-3 py-1">: {profile?.school?.headmaster_nip || '................................'}</td>
+                                        </tr>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">PANGKAT/GOL</td>
+                                            <td className="px-3 py-1">: {profile?.school?.headmaster_pangkat || '................................'}</td>
+                                        </tr>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">JABATAN</td>
+                                            <td className="px-3 py-1">: {profile?.school?.headmaster_jabatan || 'Kepala Madrasah'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">Unit Kerja</td>
+                                            <td className="px-3 py-1">: {profile?.school?.name || '................................'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td className="border border-slate-900 p-0">
+                                <table className="w-full border-collapse text-[9px]">
+                                    <tbody>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">NAMA</td>
+                                            <td className="px-3 py-1">: {profile?.name || '................................'}</td>
+                                        </tr>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">NIP</td>
+                                            <td className="px-3 py-1">: {profile?.nip || '................................'}</td>
+                                        </tr>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">PANGKAT/GOL</td>
+                                            <td className="px-3 py-1">: {profile?.pangkat_gol || '................................'}</td>
+                                        </tr>
+                                        <tr className="border-b border-slate-900">
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">JABATAN</td>
+                                            <td className="px-3 py-1">: {profile?.jabatan || '................................'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="px-3 py-1 w-24 font-bold border-r border-slate-900">Unit Kerja</td>
+                                            <td className="px-3 py-1">: {profile?.school?.name || '................................'}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             {/* Main Data Table */}
             <table className="w-full border-collapse border border-slate-900 text-[10px] mb-4">
