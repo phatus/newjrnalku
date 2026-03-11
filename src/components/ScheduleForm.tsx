@@ -63,15 +63,20 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
             </h2>
             <form
                 action={async (formData) => {
+                    console.log("DEBUG: Form submit started");
                     setLoading(true);
                     startTransition(async () => {
                         try {
                             if (initialData) {
+                                console.log("DEBUG: Calling updateSchedule for", initialData.id);
                                 await updateSchedule(initialData.id, formData);
+                                alert("Jadwal diperbarui!");
                                 router.refresh();
                                 if (onCancel) onCancel();
                             } else {
+                                console.log("DEBUG: Calling saveSchedule");
                                 await saveSchedule(formData);
+                                alert("Jadwal disimpan!");
                                 router.refresh();
                                 setSelectedClassIds([]);
                                 setSelectedDays([]);

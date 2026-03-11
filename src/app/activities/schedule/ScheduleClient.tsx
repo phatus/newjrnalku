@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { Trash2, Calendar, Clock, BookOpen, Briefcase, FileText, Pencil } from "lucide-react";
+import { Trash2, Calendar, Clock, BookOpen, Briefcase, FileText, Pencil, MoreVertical, Users } from "lucide-react";
 import { deleteSchedule } from "./actions";
 import ScheduleForm from "@/components/ScheduleForm";
 import { cn } from "@/lib/utils";
@@ -19,11 +19,23 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
-    const days = [
+    const dayNames = [
         "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"
     ];
 
+    // Group schedules by day
+    const groupedSchedules = schedules.reduce((acc: any, s: any) => {
+        const day = s.day_of_week;
+        if (!acc[day]) acc[day] = [];
+        acc[day].push(s);
+        return acc;
+    }, {});
+
+    // Sort days starting from Monday (1) to Sunday (0)
+    const sortedDayIndexes = [1, 2, 3, 4, 5, 6, 0];
+
     const handleEdit = (schedule: any) => {
+        console.log("DEBUG: Editing schedule", schedule.id);
         setEditingSchedule(schedule);
         // Scroll to form
         const element = document.getElementById("schedule-form");
@@ -32,14 +44,17 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (!confirm("Hapus jadwal ini?")) return;
+    const handleDelete = async (id: string, topic: string) => {
+        if (!confirm(`Hapus jadwal "${topic}"?`)) return;
         
+        console.log("DEBUG: Deleting schedule", id);
         startTransition(async () => {
             try {
-                await deleteSchedule(id);
+                const result = await deleteSchedule(id);
+                console.log("DEBUG: Delete result", result);
                 router.refresh();
             } catch (err: any) {
+                console.error("DEBUG: Delete error", err);
                 alert(`Gagal menghapus: ${err.message}`);
             }
         });
@@ -57,69 +72,85 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
             />
 
             {/* List Section */}
-            <section className="lg:col-span-2 space-y-6">
-                <h2 className="text-xl font-black text-slate-900 px-2">Daftar Jadwal Rutin</h2>
+            <section className="lg:col-span-2 space-y-8">
+                <div className="flex items-center justify-between px-2">
+                    <h2 className="text-xl font-black text-slate-900">Daftar Jadwal Rutin</h2>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-3 py-1 rounded-full">
+                        {schedules.length} Jadwal Total
+                    </span>
+                </div>
+
                 {schedules.length === 0 ? (
                     <div className="bg-white rounded-[2.5rem] p-20 border-2 border-dashed border-slate-200 text-center flex flex-col items-center">
                         <Calendar size={48} className="text-slate-200 mb-4" />
                         <p className="text-slate-400 font-bold uppercase tracking-wider">Belum ada jadwal yang diatur</p>
                     </div>
                 ) : (
-                    <div className="space-y-4">
-                        {schedules.map((item: any) => {
-                            const classNames = item.schedule_class_rooms?.map((p: any) => p.class_rooms?.name).filter(Boolean).join(', ');
+                    <div className="space-y-12">
+                        {sortedDayIndexes.map((dayIdx) => {
+                            const daySchedules = groupedSchedules[dayIdx] || [];
+                            if (daySchedules.length === 0) return null;
 
                             return (
-                                <div key={item.id} className="group bg-white p-6 rounded-3xl border border-slate-100 hover:border-amber-100 hover:shadow-xl hover:shadow-amber-50/50 transition-all flex items-start gap-6">
-                                    <div className="h-14 w-14 rounded-2xl bg-amber-50 flex flex-col items-center justify-center text-amber-600 shrink-0 mt-1">
-                                        <span className="text-[10px] font-black uppercase tracking-tighter leading-none">{days[item.day_of_week].substring(0, 3)}</span>
-                                        <span className="text-lg font-black leading-none mt-1"><Clock size={16} /></span>
+                                <div key={dayIdx} className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                    <div className="flex items-center gap-4 px-2">
+                                        <div className="h-2 w-2 rounded-full bg-amber-500" />
+                                        <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">{dayNames[dayIdx]}</h3>
+                                        <div className="h-px flex-1 bg-slate-100" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <h3 className="font-black text-slate-900 tracking-tight group-hover:text-amber-600 transition-colors uppercase truncate">{item.topic}</h3>
-                                            <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[9px] font-black text-slate-500 uppercase tracking-widest">{item.report_categories?.name}</span>
-                                        </div>
 
-                                        {item.description && (
-                                            <p className="text-[11px] font-medium text-slate-500 line-clamp-2 mb-2 leading-relaxed">{item.description}</p>
-                                        )}
+                                    <div className="grid gap-3">
+                                        {daySchedules.map((item: any) => {
+                                            const classNames = item.schedule_class_rooms?.map((p: any) => p.class_rooms?.name).filter(Boolean).join(', ');
 
-                                        <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2 bg-slate-50/50 p-2 rounded-xl border border-slate-100/50 w-fit">
-                                            {item.teaching_hours && (
-                                                <div className="flex items-center gap-1.5 text-amber-600">
-                                                    <Clock size={12} />
-                                                    <span>{item.teaching_hours} JP</span>
+                                            return (
+                                                <div key={item.id} className="group bg-white p-5 rounded-3xl border border-slate-100 hover:border-amber-100 hover:shadow-xl hover:shadow-amber-50/50 transition-all flex items-center gap-5">
+                                                    <div className="h-12 w-12 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-50 group-hover:text-amber-500 transition-all shrink-0">
+                                                        <Clock size={20} />
+                                                    </div>
+                                                    
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2 mb-0.5">
+                                                            <h4 className="font-black text-slate-900 truncate uppercase text-sm tracking-tight">{item.topic}</h4>
+                                                            <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[8px] font-black text-slate-500 uppercase tracking-widest whitespace-nowrap">
+                                                                {item.report_categories?.name}
+                                                            </span>
+                                                        </div>
+                                                        
+                                                        <div className="flex flex-wrap items-center gap-x-3 text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                                            {item.teaching_hours && (
+                                                                <span className="text-amber-600 flex items-center gap-1">
+                                                                    <Clock size={10} /> {item.teaching_hours} JP
+                                                                </span>
+                                                            )}
+                                                            {classNames && (
+                                                                <span className="text-slate-500 flex items-center gap-1">
+                                                                    <Users size={10} /> {classNames}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-2">
+                                                        <button 
+                                                            onClick={() => handleEdit(item)}
+                                                            className="h-10 w-10 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-amber-500 hover:text-white transition-all shrink-0"
+                                                            title="Edit"
+                                                        >
+                                                            <Pencil size={16} />
+                                                        </button>
+                                                        <button 
+                                                            onClick={() => handleDelete(item.id, item.topic)}
+                                                            disabled={isPending}
+                                                            className="h-10 w-10 flex items-center justify-center rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0 disabled:opacity-50"
+                                                            title="Hapus"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            )}
-                                            {classNames && (
-                                                <div className="flex items-center gap-1.5 text-slate-600">
-                                                    <BookOpen size={12} />
-                                                    <span>Kls: {classNames}</span>
-                                                </div>
-                                            )}
-                                            {item.implementation_basis_id && (
-                                                <div className="flex items-center gap-1.5 text-blue-600">
-                                                    <Briefcase size={12} />
-                                                    <span>Dasar Tersimpan</span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <div className="flex flex-col gap-2">
-                                        <button 
-                                            onClick={() => handleEdit(item)}
-                                            className="h-12 w-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-amber-500 hover:text-white transition-all shrink-0"
-                                        >
-                                            <Pencil size={18} />
-                                        </button>
-                                        <button 
-                                            onClick={() => handleDelete(item.id)}
-                                            disabled={isPending}
-                                            className="h-12 w-12 flex items-center justify-center rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0 disabled:opacity-50"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                            );
+                                        })}
                                     </div>
                                 </div>
                             );
