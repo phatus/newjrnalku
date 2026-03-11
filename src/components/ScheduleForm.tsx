@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Plus, Tag, AlignLeft, Briefcase, Users, Clock, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface ScheduleFormProps {
     categories: any[];
@@ -19,6 +20,7 @@ export default function ScheduleForm({ categories, classes, bases, saveSchedule,
     const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
     const [selectedDays, setSelectedDays] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     // Sync state with initialData when it changes
     React.useEffect(() => {
@@ -63,13 +65,18 @@ export default function ScheduleForm({ categories, classes, bases, saveSchedule,
                     try {
                         if (initialData && updateSchedule) {
                             await updateSchedule(initialData.id, formData);
+                            router.refresh();
                             if (onCancel) onCancel();
                         } else {
                             await saveSchedule(formData);
+                            router.refresh();
                             setSelectedClassIds([]);
                             setSelectedDays([]);
                             setSelectedCategoryId("");
                         }
+                    } catch (err: any) {
+                        console.error('Submit Error:', err);
+                        alert(`Gagal menyimpan: ${err.message || 'Terjadi kesalahan sistem'}`);
                     } finally {
                         setLoading(false);
                     }

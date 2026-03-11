@@ -147,7 +147,10 @@ export async function updateSchedule(id: string, formData: FormData) {
         .eq('id', id)
         .eq('user_id', user.id)
 
-    if (updateError) throw updateError
+    if (updateError) {
+        console.error('updateSchedule Error:', updateError)
+        throw updateError
+    }
 
     // Handle classes: Delete and Re-insert
     const adminSupabase = createAdminClient()
