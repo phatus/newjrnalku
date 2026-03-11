@@ -1,25 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Plus, Tag, AlignLeft, Briefcase, Users, Clock, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { saveSchedule, updateSchedule } from "@/app/activities/schedule/actions";
 
 interface ScheduleFormProps {
     categories: any[];
     classes: any[];
     bases: any[];
-    saveSchedule: (formData: FormData) => Promise<void>;
-    updateSchedule?: (id: string, formData: FormData) => Promise<void>;
     initialData?: any;
     onCancel?: () => void;
 }
 
-export default function ScheduleForm({ categories, classes, bases, saveSchedule, updateSchedule, initialData, onCancel }: ScheduleFormProps) {
+export default function ScheduleForm({ categories, classes, bases, initialData, onCancel }: ScheduleFormProps) {
     const [selectedCategoryId, setSelectedCategoryId] = useState("");
     const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
     const [selectedDays, setSelectedDays] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
+    const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
     // Sync state with initialData when it changes
@@ -54,6 +54,8 @@ export default function ScheduleForm({ categories, classes, bases, saveSchedule,
         );
     }
 
+    const isLoading = loading || isPending;
+
     return (
         <section id="schedule-form" className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm h-fit">
             <h2 className="text-xl font-black text-slate-900 mb-6">
@@ -62,24 +64,26 @@ export default function ScheduleForm({ categories, classes, bases, saveSchedule,
             <form
                 action={async (formData) => {
                     setLoading(true);
-                    try {
-                        if (initialData && updateSchedule) {
-                            await updateSchedule(initialData.id, formData);
-                            router.refresh();
-                            if (onCancel) onCancel();
-                        } else {
-                            await saveSchedule(formData);
-                            router.refresh();
-                            setSelectedClassIds([]);
-                            setSelectedDays([]);
-                            setSelectedCategoryId("");
+                    startTransition(async () => {
+                        try {
+                            if (initialData) {
+                                await updateSchedule(initialData.id, formData);
+                                router.refresh();
+                                if (onCancel) onCancel();
+                            } else {
+                                await saveSchedule(formData);
+                                router.refresh();
+                                setSelectedClassIds([]);
+                                setSelectedDays([]);
+                                setSelectedCategoryId("");
+                            }
+                        } catch (err: any) {
+                            console.error('Submit Error:', err);
+                            alert(`Gagal menyimpan: ${err.message || 'Terjadi kesalahan sistem'}`);
+                        } finally {
+                            setLoading(false);
                         }
-                    } catch (err: any) {
-                        console.error('Submit Error:', err);
-                        alert(`Gagal menyimpan: ${err.message || 'Terjadi kesalahan sistem'}`);
-                    } finally {
-                        setLoading(false);
-                    }
+                    });
                 }}
                 className="space-y-6"
             >
@@ -192,10 +196,10 @@ export default function ScheduleForm({ categories, classes, bases, saveSchedule,
                 <div className="flex flex-col gap-3">
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={isLoading}
                         className="w-full h-16 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 active:scale-[0.98] transition-all shadow-lg shadow-slate-200 mt-4 flex items-center justify-center gap-2 disabled:opacity-50"
                     >
-                        {loading ? (
+                        {isLoading ? (
                             <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
                             <>

@@ -1,22 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import { Trash2, Calendar, Clock, BookOpen, Briefcase, FileText, Pencil } from "lucide-react";
+import { deleteSchedule } from "./actions";
 import ScheduleForm from "@/components/ScheduleForm";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface ScheduleClientProps {
     schedules: any[];
     categories: any[];
     classes: any[];
     bases: any[];
-    saveSchedule: (formData: FormData) => Promise<void>;
-    deleteSchedule: (id: string) => Promise<void>;
-    updateSchedule: (id: string, formData: FormData) => Promise<void>;
 }
 
-export default function ScheduleClient({ schedules, categories, classes, bases, saveSchedule, deleteSchedule, updateSchedule }: ScheduleClientProps) {
+export default function ScheduleClient({ schedules, categories, classes, bases }: ScheduleClientProps) {
     const [editingSchedule, setEditingSchedule] = useState<any>(null);
+    const [isPending, startTransition] = useTransition();
+    const router = useRouter();
 
     const days = [
         "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"
@@ -31,6 +32,19 @@ export default function ScheduleClient({ schedules, categories, classes, bases, 
         }
     };
 
+    const handleDelete = async (id: string) => {
+        if (!confirm("Hapus jadwal ini?")) return;
+        
+        startTransition(async () => {
+            try {
+                await deleteSchedule(id);
+                router.refresh();
+            } catch (err: any) {
+                alert(`Gagal menghapus: ${err.message}`);
+            }
+        });
+    };
+
     return (
         <div className="max-w-7xl mx-auto w-full px-6 sm:px-10 mt-10 grid lg:grid-cols-3 gap-8">
             {/* Form Section */}
@@ -38,8 +52,6 @@ export default function ScheduleClient({ schedules, categories, classes, bases, 
                 categories={categories}
                 classes={classes}
                 bases={bases}
-                saveSchedule={saveSchedule}
-                updateSchedule={updateSchedule}
                 initialData={editingSchedule}
                 onCancel={() => setEditingSchedule(null)}
             />
@@ -101,11 +113,13 @@ export default function ScheduleClient({ schedules, categories, classes, bases, 
                                         >
                                             <Pencil size={18} />
                                         </button>
-                                        <form action={deleteSchedule.bind(null, item.id)}>
-                                            <button className="h-12 w-12 flex items-center justify-center rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0">
-                                                <Trash2 size={18} />
-                                            </button>
-                                        </form>
+                                        <button 
+                                            onClick={() => handleDelete(item.id)}
+                                            disabled={isPending}
+                                            className="h-12 w-12 flex items-center justify-center rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0 disabled:opacity-50"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
                                     </div>
                                 </div>
                             );
