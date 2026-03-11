@@ -21,7 +21,7 @@ export async function getSchedules(selectedDate?: string) {
             .from('activity_schedules')
             .select(`
                 *,
-                report_categories(name),
+                report_categories(name, is_teaching),
                 schedule_class_rooms(class_room_id, class_rooms(name))
             `)
             .eq('user_id', user.id)
@@ -218,7 +218,12 @@ export async function updateSchedule(id: string, formData: FormData) {
     }
 }
 
-export async function convertScheduleToActivity(scheduleId: string, date: string) {
+export async function convertScheduleToActivity(
+    scheduleId: string, 
+    date: string, 
+    learningMaterial?: string, 
+    learningOutcome?: string
+) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Unauthorized')
@@ -255,10 +260,10 @@ export async function convertScheduleToActivity(scheduleId: string, date: string
             activity_date: date,
             description: schedule.description || 'Kegiatan Rutin Terjadwal',
             topic: schedule.topic || 'Kegiatan Rutin',
-            learning_material: null,
+            learning_material: learningMaterial || null,
             teaching_hours: schedule.teaching_hours || 0,
             student_count: 32,
-            learning_outcome: null,
+            learning_outcome: learningOutcome || null,
             status: 'Selesai'
         })
         .select()

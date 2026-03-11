@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { CheckCircle2, Calendar, Clock, ArrowRight } from 'lucide-react'
+import { CheckCircle2, Calendar, Clock, ArrowRight, Book, Target, Save, X } from 'lucide-react'
 import { convertScheduleToActivity } from '@/app/activities/schedule/actions'
 import { cn } from '@/lib/utils'
 
@@ -11,7 +11,7 @@ interface ScheduleItem {
     day_of_week: number
     teaching_hours?: string
     is_confirmed_today?: boolean
-    report_categories?: { name: string }
+    report_categories?: { name: string, is_teaching?: boolean }
     schedule_class_rooms?: { class_rooms: { name: string } }[]
 }
 
@@ -19,6 +19,11 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
     const [todaySchedules, setTodaySchedules] = useState<ScheduleItem[]>([])
     const [loading, setLoading] = useState<string | null>(null)
     const [completed, setCompleted] = useState<string[]>([])
+    
+    // KBM Input States
+    const [isInputting, setIsInputting] = useState<string | null>(null)
+    const [materi, setMateri] = useState('')
+    const [capaian, setCapaian] = useState('')
 
     useEffect(() => {
         // Parse the selectedDate to get the day of the week (0-6)
@@ -33,10 +38,10 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
         setCompleted(alreadyConfirmed)
     }, [initialSchedules, selectedDate])
 
-    const handleConfirm = async (id: string) => {
+    const handleConfirm = async (id: string, mat?: string, cap?: string) => {
         setLoading(id)
         try {
-            const result = await convertScheduleToActivity(id, selectedDate) as any
+            const result = await convertScheduleToActivity(id, selectedDate, mat, cap) as any
 
             if (result && result.success === false) {
                 alert(result.error || 'Terjadi kesalahan.')
@@ -45,6 +50,9 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
                 }
             } else {
                 setCompleted(prev => [...prev, id])
+                setIsInputting(null)
+                setMateri('')
+                setCapaian('')
             }
         } catch (error) {
             console.error('Failed to confirm schedule:', error)
@@ -86,19 +94,22 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
                 </span>
             </div>
 
-            <div className="grid sm:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4 items-start">
                 {todaySchedules.map((item) => {
                     const isDone = completed.includes(item.id)
+                    const isKBM = item.report_categories?.is_teaching === true
                     const classNames = item.schedule_class_rooms?.map((p: any) => p.class_rooms?.name).filter(Boolean).join(', ');
+                    const isExpanded = isInputting === item.id
 
                     return (
                         <div
                             key={item.id}
                             className={cn(
-                                "group relative overflow-hidden p-6 rounded-[2rem] border transition-all duration-500",
+                                "group relative overflow-hidden transition-all duration-500",
+                                isExpanded ? "sm:col-span-2" : "",
                                 isDone
-                                    ? "bg-green-50 border-green-100 opacity-75 shadow-sm"
-                                    : "bg-white border-slate-100 hover:border-amber-200 hover:shadow-xl hover:shadow-amber-50"
+                                    ? "bg-green-50/50 border border-green-100 opacity-75 shadow-sm rounded-[2rem] p-6"
+                                    : "bg-white border border-slate-100 hover:border-amber-200 hover:shadow-xl hover:shadow-amber-50 rounded-[2rem] p-6"
                             )}
                         >
                             <div className="flex justify-between items-start mb-4">
@@ -108,13 +119,27 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
                                 )}>
                                     {isDone ? <CheckCircle2 size={20} /> : <Clock size={20} />}
                                 </div>
-                                {!isDone && (
+                                {!isDone && !isExpanded && (
                                     <button
-                                        onClick={() => handleConfirm(item.id)}
+                                        onClick={() => {
+                                            if (isKBM) {
+                                                setIsInputting(item.id)
+                                            } else {
+                                                handleConfirm(item.id)
+                                            }
+                                        }}
                                         disabled={loading === item.id}
                                         className="h-10 px-4 bg-slate-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-slate-800 disabled:opacity-50 transition-all flex items-center gap-2"
                                     >
-                                        {loading === item.id ? "PROSES..." : "KONFIRMASI SELESAI"}
+                                        {loading === item.id ? "PROSES..." : (isKBM ? "INPUT KEGIATAN" : "KONFIRMASI SELESAI")}
+                                    </button>
+                                )}
+                                {isExpanded && (
+                                    <button 
+                                        onClick={() => setIsInputting(null)}
+                                        className="h-10 w-10 flex items-center justify-center bg-slate-100 text-slate-400 rounded-xl hover:bg-red-50 hover:text-red-500 transition-all"
+                                    >
+                                        <X size={18} />
                                     </button>
                                 )}
                             </div>
@@ -134,6 +159,56 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
                                     )}
                                 </div>
                             </div>
+
+                            {/* Expanded KBM Input Section */}
+                            {isExpanded && (
+                                <div className="mt-8 pt-6 border-t border-slate-100 space-y-6 animate-in slide-in-from-top-4 duration-300">
+                                    <div className="grid md:grid-cols-2 gap-6">
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                                <Book size={12} className="text-amber-500" />
+                                                Materi Pembelajaran Yang Diajarkan
+                                            </label>
+                                            <div className="relative group/input">
+                                                <textarea
+                                                    value={materi}
+                                                    onChange={(e) => setMateri(e.target.value)}
+                                                    placeholder="Topik materi yang diajarkan hari ini..."
+                                                    className="w-full h-32 p-5 bg-slate-50 border-none rounded-[1.5rem] text-sm font-bold placeholder:text-slate-300 focus:ring-2 focus:ring-amber-500/20 transition-all resize-none"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-3">
+                                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
+                                                <Target size={12} className="text-green-500" />
+                                                Capaian / Hasil Pembelajaran
+                                            </label>
+                                            <div className="relative group/input">
+                                                <textarea
+                                                    value={capaian}
+                                                    onChange={(e) => setCapaian(e.target.value)}
+                                                    placeholder="Siswa mampu memahami konsep dasar..."
+                                                    className="w-full h-32 p-5 bg-slate-50 border-none rounded-[1.5rem] text-sm font-bold placeholder:text-slate-300 focus:ring-2 focus:ring-amber-500/20 transition-all resize-none"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-end">
+                                        <button
+                                            onClick={() => handleConfirm(item.id, materi, capaian)}
+                                            disabled={loading === item.id || !materi || !capaian}
+                                            className="h-14 px-8 bg-amber-500 text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl shadow-amber-100 hover:bg-amber-600 disabled:opacity-50 disabled:shadow-none transition-all flex items-center gap-3"
+                                        >
+                                            {loading === item.id ? (
+                                                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                                            ) : (
+                                                <Save size={18} />
+                                            )}
+                                            SIMPAN KEGIATAN
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
 
                             {isDone && (
                                 <div className="absolute top-2 right-2 rotate-12">
