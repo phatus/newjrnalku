@@ -34,7 +34,7 @@ export default function Sidebar({ user, profile, isCollapsed, toggleCollapse }: 
             <style dangerouslySetInnerHTML={{ __html: "@media print { aside { display: none !important; width: 0 !important; height: 0 !important; visibility: hidden !important; } }" }} />
             <aside
                 className={cn(
-                    "fixed left-0 top-0 bottom-0 z-40 hidden flex-col border-r border-slate-200 bg-white sm:flex transition-all duration-300 ease-in-out relative",
+                    "fixed left-0 top-0 bottom-0 z-40 hidden flex-col border-r border-slate-200 bg-white sm:flex transition-all duration-300 ease-in-out",
                     isCollapsed ? "w-20" : "w-72"
                 )}
             >

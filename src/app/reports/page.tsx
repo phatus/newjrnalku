@@ -40,30 +40,42 @@ export default async function ReportsPage() {
             <div className="max-w-7xl mx-auto px-6 sm:px-10 mt-10 grid lg:grid-cols-4 gap-8">
                 {/* Left: Summary Stats */}
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-amber-500 rounded-[2.5rem] p-8 text-white shadow-xl shadow-amber-100 relative overflow-hidden group">
+                    <div className="bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full -mr-16 -mt-16 blur-3xl" />
                         <div className="relative z-10 space-y-8">
                             <div>
-                                <p className="text-[10px] font-black opacity-70 uppercase tracking-widest">Status Kinerja</p>
-                                <h3 className="text-2xl font-black mt-1">Normal</h3>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Status Kinerja</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                                    <h3 className="text-xl font-black text-slate-900">Normal</h3>
+                                </div>
                             </div>
-                            <div className="space-y-4">
+                            <div className="space-y-4 pt-4 border-t border-slate-50">
                                 <div>
-                                    <p className="text-4xl font-black">{stats?.totalActivities > 0 ? 'Aktif' : 'Belum Aktif'}</p>
-                                    <p className="text-[10px] font-bold opacity-70 uppercase tracking-widest mt-1">Status Pencatatan</p>
+                                    <p className="text-5xl font-black text-amber-500 tracking-tighter italic">
+                                        {stats?.totalActivities > 0 ? 'AKTIF' : 'PASIF'}
+                                    </p>
+                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-2">Status Pencatatan</p>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-4xl p-6 border border-slate-100 shadow-sm space-y-4">
-                        <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center">
-                                <TrendingUp size={20} />
+                    <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-slate-200">
+                        <div className="absolute bottom-0 right-0 w-24 h-24 bg-white/5 rounded-full -mb-12 -mr-12 blur-2xl" />
+                        <div className="relative z-10">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="h-10 w-10 rounded-2xl bg-white/10 text-white flex items-center justify-center">
+                                    <TrendingUp size={20} />
+                                </div>
+                                <h4 className="text-xs font-black uppercase tracking-widest">Analisis Cepat</h4>
                             </div>
-                            <h4 className="text-sm font-black text-slate-900 tracking-tight">Analisis Cepat</h4>
+                            <p className="text-[10px] font-bold text-slate-400 leading-relaxed uppercase tracking-widest">
+                                {stats?.totalActivities > 0 
+                                    ? `Anda telah mencatat ${stats.totalActivities} kegiatan bulan ini. Pertahankan konsistensi Anda.` 
+                                    : "Mulai catat kegiatan Anda hari ini untuk melihat analisis kinerja di sini."}
+                            </p>
                         </div>
-
-                        <p className="text-[11px] font-bold text-slate-400 leading-relaxed uppercase tracking-wide">Mulai catat kegiatan Anda hari ini untuk melihat analisis kinerja di sini.</p>
                     </div>
                 </div>
 

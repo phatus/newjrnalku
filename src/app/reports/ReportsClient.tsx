@@ -50,32 +50,36 @@ export default function ReportsClient({ reportTypes }: { reportTypes: any[] }) {
             </div>
 
             <section className="space-y-6">
-                <h2 className="text-lg font-black text-slate-900 tracking-tight ml-2 border-l-4 border-amber-500 pl-4">Eksport Laporan</h2>
+                <h2 className="text-sm font-black text-slate-900 tracking-widest ml-2 border-l-4 border-amber-500 pl-4 uppercase">Eksport Laporan</h2>
                 <div className="grid md:grid-cols-3 gap-6">
                     {reportTypes.map((type) => {
                         const Icon = iconMap[type.icon] || FileText;
                         return (
-                            <div key={type.id} className="group bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:shadow-xl hover:-translate-y-1">
-                                <div className={cn("h-20 w-20 rounded-[1.5rem] flex items-center justify-center mb-6 transition-transform group-hover:scale-110", type.bg, type.color)}>
-                                    <Icon size={36} />
+                            <div key={type.id} className="group bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm flex flex-col items-center text-center transition-all hover:shadow-2xl hover:shadow-amber-900/5 hover:-translate-y-1">
+                                <div className={cn("h-16 w-16 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110", type.bg, type.color)}>
+                                    <Icon size={28} />
                                 </div>
-                                <h3 className="text-base font-black text-slate-900 tracking-tight">{type.name}</h3>
-                                <p className="text-xs text-slate-400 font-medium mt-2 leading-relaxed h-8 line-clamp-2">{type.desc}</p>
+                                <h3 className="text-lg font-black text-slate-900 tracking-tight">{type.name}</h3>
+                                <p className="text-[11px] text-slate-400 font-bold mt-3 leading-relaxed uppercase tracking-wide">
+                                    {type.desc}
+                                </p>
 
-                                <div className="mt-8 flex items-center gap-2 w-full pt-6 border-t border-slate-50">
-                                    <button
-                                        onClick={() => handleDownload(type.id)}
-                                        className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-amber-500 text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-amber-100 transition-colors"
-                                    >
-                                        <Download size={14} />
-                                        PDF / CETAK
-                                    </button>
-                                    <button
-                                        onClick={() => handleDownload(type.id)}
-                                        className="h-12 w-12 flex items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:text-amber-500 transition-colors"
-                                    >
-                                        <ArrowRight size={18} />
-                                    </button>
+                                <div className="mt-auto pt-8 w-full">
+                                    <div className="flex items-center gap-2 p-1 bg-slate-50 rounded-2xl border border-slate-100/50">
+                                        <button
+                                            onClick={() => handleDownload(type.id)}
+                                            className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl bg-white text-amber-600 border border-amber-100 font-black text-[10px] uppercase tracking-widest shadow-sm hover:bg-amber-500 hover:text-white hover:border-amber-500 transition-all"
+                                        >
+                                            <Download size={14} />
+                                            CETAK PDF
+                                        </button>
+                                        <button
+                                            onClick={() => handleDownload(type.id)}
+                                            className="h-12 w-12 flex items-center justify-center rounded-xl bg-white text-slate-400 border border-slate-100 hover:text-amber-500 hover:border-amber-200 transition-all"
+                                        >
+                                            <ArrowRight size={18} />
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         );
