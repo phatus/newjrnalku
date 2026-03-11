@@ -14,6 +14,7 @@ interface ScheduleFormProps {
 export default function ScheduleForm({ categories, classes, bases, saveSchedule }: ScheduleFormProps) {
     const [selectedCategoryId, setSelectedCategoryId] = useState("");
     const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
+    const [selectedDays, setSelectedDays] = useState<number[]>([]);
     const [loading, setLoading] = useState(false);
 
     const days = [
@@ -22,6 +23,12 @@ export default function ScheduleForm({ categories, classes, bases, saveSchedule 
 
     const selectedCategory = categories.find(c => String(c.id) === selectedCategoryId);
     const isTeaching = selectedCategory?.is_teaching || false;
+
+    function toggleDay(index: number) {
+        setSelectedDays(prev =>
+            prev.includes(index) ? prev.filter(x => x !== index) : [...prev, index]
+        );
+    }
 
     function toggleClass(id: string) {
         setSelectedClassIds(prev =>
@@ -38,23 +45,35 @@ export default function ScheduleForm({ categories, classes, bases, saveSchedule 
                     try {
                         await saveSchedule(formData);
                         setSelectedClassIds([]);
+                        setSelectedDays([]);
                     } finally {
                         setLoading(false);
                     }
                 }}
                 className="space-y-6"
             >
-                {/* Hidden field for multi-select class IDs */}
+                {/* Hidden fields for multi-select */}
                 <input type="hidden" name="class_room_ids" value={selectedClassIds.join(',')} />
+                <input type="hidden" name="days_of_week" value={selectedDays.join(',')} />
 
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 ml-1">Hari</label>
-                    <div className="relative">
-                        <select name="day_of_week" className="w-full h-14 bg-slate-50 border-none rounded-2xl px-6 font-bold text-slate-900 focus:ring-2 focus:ring-amber-500 transition-all cursor-pointer appearance-none" required>
-                            {days.map((day, i) => (
-                                <option key={i} value={i}>{day}</option>
-                            ))}
-                        </select>
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-2 ml-1">Hari Pelaksanaan</label>
+                    <div className="flex flex-wrap gap-2 px-1">
+                        {days.map((day, i) => (
+                            <button
+                                key={i}
+                                type="button"
+                                onClick={() => toggleDay(i)}
+                                className={cn(
+                                    "h-10 px-4 rounded-xl text-[11px] font-black transition-all border-2",
+                                    selectedDays.includes(i)
+                                        ? "bg-amber-500 text-white border-amber-500 shadow-md shadow-amber-100"
+                                        : "bg-slate-50 text-slate-500 border-slate-50 hover:border-amber-200"
+                                )}
+                            >
+                                {day}
+                            </button>
+                        ))}
                     </div>
                 </div>
 

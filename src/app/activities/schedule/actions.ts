@@ -57,7 +57,7 @@ export async function saveSchedule(formData: FormData) {
 
     if (!user) throw new Error('Unauthorized')
 
-    const day_of_week = parseInt(formData.get('day_of_week') as string, 10)
+    const days_of_week = (formData.get('days_of_week') as string || '').split(',').filter(id => id).map(id => parseInt(id, 10))
     const category_id = parseInt(formData.get('category_id') as string, 10)
     const implementation_basis_id = parseInt(formData.get('implementation_basis_id') as string, 10) || null
     const topic = formData.get('topic') as string
@@ -65,37 +65,42 @@ export async function saveSchedule(formData: FormData) {
     const teaching_hours = formData.get('teaching_hours') as string || null
     const class_room_ids = (formData.get('class_room_ids') as string || '').split(',').filter(id => id).map(id => parseInt(id, 10))
 
+    if (days_of_week.length === 0) throw new Error('Harap pilih minimal satu hari')
+
     // Get user's school_id
     const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
 
-    const { data: schedule, error: scheduleError } = await supabase
-        .from('activity_schedules')
-        .insert({
-            user_id: user.id,
-            school_id: profile?.school_id,
-            category_id,
-            implementation_basis_id,
-            day_of_week,
-            topic,
-            description,
-            teaching_hours,
-            is_active: true
-        })
-        .select()
-        .single()
+    for (const day_of_week of days_of_week) {
+        const { data: schedule, error: scheduleError } = await supabase
+            .from('activity_schedules')
+            .insert({
+                user_id: user.id,
+                school_id: profile?.school_id,
+                category_id,
+                implementation_basis_id,
+                day_of_week,
+                topic,
+                description,
+                teaching_hours,
+                is_active: true
+            })
+            .select()
+            .single()
 
-    if (scheduleError) throw scheduleError
+        if (scheduleError) throw scheduleError
 
-    if (class_room_ids.length > 0 && schedule) {
-        const pivotData = class_room_ids.map(class_id => ({
-            schedule_id: schedule.id,
-            class_room_id: class_id
-        }))
-        const adminSupabase = createAdminClient()
-        const { error: pivotError } = await adminSupabase.from('schedule_class_rooms').insert(pivotData)
-        if (pivotError) {
-            console.error('saveSchedule Pivot Error:', pivotError)
-            throw new Error(`Gagal menyimpan data kelas: ${pivotError.message}`)
+        if (class_room_ids.length > 0 && schedule) {
+            const pivotData = class_room_ids.map(class_id => ({
+                schedule_id: schedule.id,
+                class_room_id: class_id
+            }))
+            const adminSupabase = createAdminClient()
+            const { error: pivotError } = await adminSupabase.from('schedule_class_rooms').insert(pivotData)
+            if (pivotError) {
+                console.error('saveSchedule Pivot Error:', pivotError)
+                // Continue to next day even if pivot fails? Better to throw or log
+                throw new Error(`Gagal menyimpan data kelas untuk hari ${day_of_week}: ${pivotError.message}`)
+            }
         }
     }
 
