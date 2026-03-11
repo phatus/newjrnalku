@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function getSchedules() {
+    console.log('SERVER ACTION: getSchedules started')
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -105,24 +106,40 @@ export async function saveSchedule(formData: FormData) {
             const { error: pivotError } = await adminSupabase.from('schedule_class_rooms').insert(pivotData)
             if (pivotError) {
                 console.error('SERVER ACTION: saveSchedule Pivot Error:', pivotError)
-                throw new Error(`Gagal menyimpan data kelas untuk hari ${day_of_week}: ${pivotError.message}`)
+                throw new Error(`Gagal menyimpan data kelas: ${pivotError.message}`)
             }
         }
     }
     console.log('SERVER ACTION: saveSchedule success')
     revalidatePath('/activities/schedule')
+    revalidatePath('/')
 }
 
 export async function deleteSchedule(id: string) {
     console.log('SERVER ACTION: deleteSchedule started', id)
     const supabase = await createClient()
-    const { error } = await supabase.from('activity_schedules').delete().eq('id', id)
-    if (error) {
-        console.error('SERVER ACTION: deleteSchedule Error', error)
-        throw error
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error('Unauthorized')
+
+    // Find topic and category to delete all siblings
+    const { data: current } = await supabase.from('activity_schedules').select('topic, category_id').eq('id', id).single()
+    
+    if (current) {
+        const { error } = await supabase
+            .from('activity_schedules')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('topic', current.topic)
+            .eq('category_id', current.category_id)
+        if (error) throw error
+    } else {
+        // Fallback to just deleting the ID
+        const { error } = await supabase.from('activity_schedules').delete().eq('id', id)
+        if (error) throw error
     }
-    console.log('SERVER ACTION: deleteSchedule success')
+
     revalidatePath('/activities/schedule')
+    revalidatePath('/')
 }
 
 export async function updateSchedule(id: string, formData: FormData) {
@@ -132,58 +149,66 @@ export async function updateSchedule(id: string, formData: FormData) {
 
     if (!user) throw new Error('Unauthorized')
 
-    const days_of_week = (formData.get('days_of_week') as string || '').split(',').filter(id => id).map(id => parseInt(id, 10))
+    // 1. Get current record to find siblings (topic match)
+    const { data: current } = await supabase.from('activity_schedules').select('topic, category_id').eq('id', id).single()
+    if (!current) throw new Error('Schedule not found')
+
+    const new_days_of_week = (formData.get('days_of_week') as string || '').split(',').filter(id => id).map(id => parseInt(id, 10))
     const category_id = parseInt(formData.get('category_id') as string, 10)
-    const implementation_basis_id = parseInt(formData.get('implementation_basis_id') as string, 10) || null
     const topic = formData.get('topic') as string
+    const implementation_basis_id = parseInt(formData.get('implementation_basis_id') as string, 10) || null
     const description = formData.get('description') as string || null
     const teaching_hours = formData.get('teaching_hours') as string || null
     const class_room_ids = (formData.get('class_room_ids') as string || '').split(',').filter(id => id).map(id => parseInt(id, 10))
 
-    console.log('SERVER ACTION: updateSchedule data', { topic, days_of_week })
+    if (new_days_of_week.length === 0) throw new Error('Harap pilih minimal satu hari')
 
-    if (days_of_week.length === 0) throw new Error('Harap pilih minimal satu hari')
-    const day_of_week = days_of_week[0]
-
-    const { error: updateError } = await supabase
+    // 2. Delete ALL records with current topic and category for this user
+    // This effectively "syncs" the group
+    const { error: deleteError } = await supabase
         .from('activity_schedules')
-        .update({
-            category_id,
-            implementation_basis_id,
-            day_of_week,
-            topic,
-            description,
-            teaching_hours
-        })
-        .eq('id', id)
+        .delete()
         .eq('user_id', user.id)
+        .eq('topic', current.topic)
+        .eq('category_id', current.category_id)
 
-    if (updateError) {
-        console.error('SERVER ACTION: updateSchedule Error:', updateError)
-        throw updateError
-    }
+    if (deleteError) throw deleteError
 
-    const adminSupabase = createAdminClient()
-    const { error: deletePivotError } = await adminSupabase.from('schedule_class_rooms').delete().eq('schedule_id', id)
-    if (deletePivotError) {
-        console.error('SERVER ACTION: deletePivotError', deletePivotError)
-        throw deletePivotError
-    }
+    // 3. Create NEW records for all selected days
+    const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
 
-    if (class_room_ids.length > 0) {
-        const pivotData = class_room_ids.map(class_id => ({
-            schedule_id: id,
-            class_room_id: class_id
-        }))
-        const { error: pivotError } = await adminSupabase.from('schedule_class_rooms').insert(pivotData)
-        if (pivotError) {
-            console.error('SERVER ACTION: updateSchedule Pivot Error:', pivotError)
-            throw new Error(`Gagal memperbarui data kelas: ${pivotError.message}`)
+    for (const day of new_days_of_week) {
+        const { data: schedule, error: insertError } = await supabase
+            .from('activity_schedules')
+            .insert({
+                user_id: user.id,
+                school_id: profile?.school_id,
+                category_id,
+                implementation_basis_id,
+                day_of_week: day,
+                topic,
+                description,
+                teaching_hours,
+                is_active: true
+            })
+            .select()
+            .single()
+
+        if (insertError) throw insertError
+
+        if (class_room_ids.length > 0 && schedule) {
+            const pivotData = class_room_ids.map(class_id => ({
+                schedule_id: schedule.id,
+                class_room_id: class_id
+            }))
+            const adminSupabase = createAdminClient()
+            const { error: pivotError } = await adminSupabase.from('schedule_class_rooms').insert(pivotData)
+            if (pivotError) throw new Error(`Gagal menyimpan data kelas: ${pivotError.message}`)
         }
     }
 
-    console.log('SERVER ACTION: updateSchedule success')
     revalidatePath('/activities/schedule')
+    revalidatePath('/')
 }
 
 export async function convertScheduleToActivity(scheduleId: string, date: string) {
@@ -191,7 +216,6 @@ export async function convertScheduleToActivity(scheduleId: string, date: string
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Unauthorized')
 
-    // 0. Check for existing activity for this schedule and date
     const { data: existing } = await supabase
         .from('activities')
         .select('id')
@@ -204,7 +228,6 @@ export async function convertScheduleToActivity(scheduleId: string, date: string
         return { success: false, error: 'Kegiatan untuk jadwal ini sudah dibuat hari ini.' }
     }
 
-    // 1. Fetch Schedule Data (with adminSupabase to bypass RLS on pivot)
     const adminSupa = createAdminClient()
     const { data: schedule, error: fetchError } = await adminSupa
         .from('activity_schedules')
@@ -214,7 +237,6 @@ export async function convertScheduleToActivity(scheduleId: string, date: string
 
     if (fetchError || !schedule) throw new Error('Schedule not found')
 
-    // 2. Create Activity
     const { data: activity, error: activityError } = await supabase
         .from('activities')
         .insert({
@@ -222,11 +244,11 @@ export async function convertScheduleToActivity(scheduleId: string, date: string
             school_id: schedule.school_id,
             category_id: schedule.category_id,
             implementation_basis_id: schedule.implementation_basis_id,
-            schedule_id: schedule.id, // Link back to schedule
+            schedule_id: schedule.id,
             activity_date: date,
             description: schedule.description || 'Kegiatan Rutin Terjadwal',
             topic: schedule.topic || 'Kegiatan Rutin',
-            learning_material: null, // To be filled during teaching
+            learning_material: null,
             teaching_hours: schedule.teaching_hours || 0,
             student_count: 32,
             learning_outcome: null,
@@ -237,7 +259,6 @@ export async function convertScheduleToActivity(scheduleId: string, date: string
 
     if (activityError) throw activityError
 
-    // 3. Handle Classes
     if (schedule.schedule_class_rooms && schedule.schedule_class_rooms.length > 0) {
         const pivotData = schedule.schedule_class_rooms.map((p: any) => ({
             activity_id: activity.id,

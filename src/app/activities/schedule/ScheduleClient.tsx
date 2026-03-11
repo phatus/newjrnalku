@@ -68,6 +68,7 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
                 classes={classes}
                 bases={bases}
                 initialData={editingSchedule}
+                allSchedules={schedules}
                 onCancel={() => setEditingSchedule(null)}
             />
 

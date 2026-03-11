@@ -12,9 +12,10 @@ interface ScheduleFormProps {
     bases: any[];
     initialData?: any;
     onCancel?: () => void;
+    allSchedules?: any[]; // Added to find siblings
 }
 
-export default function ScheduleForm({ categories, classes, bases, initialData, onCancel }: ScheduleFormProps) {
+export default function ScheduleForm({ categories, classes, bases, initialData, onCancel, allSchedules }: ScheduleFormProps) {
     const [selectedCategoryId, setSelectedCategoryId] = useState("");
     const [selectedClassIds, setSelectedClassIds] = useState<string[]>([]);
     const [selectedDays, setSelectedDays] = useState<number[]>([]);
@@ -27,13 +28,24 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
         if (initialData) {
             setSelectedCategoryId(initialData.category_id?.toString() || "");
             setSelectedClassIds(initialData.schedule_class_rooms?.map((p: any) => p.class_room_id?.toString()) || []);
-            setSelectedDays([initialData.day_of_week]);
+            
+            // Find siblings to get all days
+            if (allSchedules) {
+                const siblings = allSchedules.filter(s => 
+                    s.topic === initialData.topic && 
+                    s.category_id === initialData.category_id &&
+                    s.user_id === initialData.user_id
+                );
+                setSelectedDays(siblings.map(s => s.day_of_week));
+            } else {
+                setSelectedDays([initialData.day_of_week]);
+            }
         } else {
             setSelectedCategoryId("");
             setSelectedClassIds([]);
             setSelectedDays([]);
         }
-    }, [initialData]);
+    }, [initialData, allSchedules]);
 
     const days = [
         "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"
