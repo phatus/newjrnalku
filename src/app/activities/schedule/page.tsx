@@ -1,7 +1,7 @@
 import React from "react";
 import { ChevronLeft, Trash2, Calendar, Clock, BookOpen, Briefcase } from "lucide-react";
 import Link from "next/link";
-import { getSchedules, saveSchedule } from "./actions";
+import { getSchedules, saveSchedule, deleteSchedule, updateSchedule } from "./actions";
 import { getCategories, getClassRooms, getImplementationBases } from "@/app/activities/actions";
 import ScheduleClient from "./ScheduleClient";
 
@@ -34,6 +34,8 @@ export default async function SchedulePage() {
                 classes={classes}
                 bases={bases}
                 saveSchedule={saveSchedule}
+                deleteSchedule={deleteSchedule}
+                updateSchedule={updateSchedule}
             />
         </div>
     );

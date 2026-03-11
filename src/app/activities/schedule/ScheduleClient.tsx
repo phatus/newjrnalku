@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Trash2, Calendar, Clock, BookOpen, Briefcase, FileText, Pencil } from "lucide-react";
-import { deleteSchedule, updateSchedule } from "./actions";
 import ScheduleForm from "@/components/ScheduleForm";
 import { cn } from "@/lib/utils";
 
@@ -12,9 +11,11 @@ interface ScheduleClientProps {
     classes: any[];
     bases: any[];
     saveSchedule: (formData: FormData) => Promise<void>;
+    deleteSchedule: (id: string) => Promise<void>;
+    updateSchedule: (id: string, formData: FormData) => Promise<void>;
 }
 
-export default function ScheduleClient({ schedules, categories, classes, bases, saveSchedule }: ScheduleClientProps) {
+export default function ScheduleClient({ schedules, categories, classes, bases, saveSchedule, deleteSchedule, updateSchedule }: ScheduleClientProps) {
     const [editingSchedule, setEditingSchedule] = useState<any>(null);
 
     const days = [
@@ -100,7 +101,7 @@ export default function ScheduleClient({ schedules, categories, classes, bases, 
                                         >
                                             <Pencil size={18} />
                                         </button>
-                                        <form action={async () => { await deleteSchedule(item.id); }}>
+                                        <form action={deleteSchedule.bind(null, item.id)}>
                                             <button className="h-12 w-12 flex items-center justify-center rounded-xl bg-red-50 text-red-400 hover:bg-red-500 hover:text-white transition-all shrink-0">
                                                 <Trash2 size={18} />
                                             </button>
