@@ -8,7 +8,8 @@ export default async function CatkinReportPage(props: {
     searchParams: Promise<{ month?: string; year?: string }>;
 }) {
     const searchParams = await props.searchParams;
-    const month = parseInt(searchParams.month || (new Date().getMonth() + 0).toString()) + 1;
+    const currentMonth = new Date().getMonth() + 1; // 1-12
+    const month = searchParams.month ? parseInt(searchParams.month) : currentMonth;
     const year = parseInt(searchParams.year || new Date().getFullYear().toString());
 
     // Use regular client for auth check

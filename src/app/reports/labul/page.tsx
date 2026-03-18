@@ -8,7 +8,8 @@ export default async function LabulReportPage(props: {
     searchParams: Promise<{ month?: string; year?: string }>;
 }) {
     const searchParams = await props.searchParams;
-    const month = parseInt(searchParams.month || new Date().getMonth().toString()) + 1;
+    const currentMonth = new Date().getMonth() + 1; // 1-12
+    const month = searchParams.month ? parseInt(searchParams.month) : currentMonth;
     const year = parseInt(searchParams.year || new Date().getFullYear().toString());
 
     const supabase = await createClient();
