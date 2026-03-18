@@ -30,7 +30,7 @@ interface ActivityFormProps {
     classes: ClassRoom[];
     bases: ImplementationBase[];
     initialData?: Activity | null;
-    action: (formData: FormData) => Promise<any>;
+    action: (formData: FormData) => Promise<{ success: boolean; error?: string }>;
 }
 
 export default function ActivityForm({ categories, classes, bases, initialData, action }: ActivityFormProps) {
@@ -63,24 +63,36 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                 try {
                     setLoading(true);
                     setErrors({});
-                    const result = await action(formData) as any;
+                    const result = await action(formData);
 
                     if (result && !result.success) {
                         if (result.error) {
+                            const errorMsg = result.error; // narrowed to string
                             // Basic mapping of common error messages to fields if possible
-                            if (result.error.includes("Tanggal")) setErrors(prev => ({ ...prev, activity_date: result.error }));
-                            else if (result.error.includes("Kategori")) setErrors(prev => ({ ...prev, category_id: result.error }));
-                            else if (result.error.includes("Deskripsi")) setErrors(prev => ({ ...prev, description: result.error }));
-                            else toast.error(result.error);
+                            if (errorMsg.includes("Tanggal")) setErrors(prev => ({ ...prev, activity_date: errorMsg }));
+                            else if (errorMsg.includes("Kategori")) setErrors(prev => ({ ...prev, category_id: errorMsg }));
+                            else if (errorMsg.includes("Deskripsi")) setErrors(prev => ({ ...prev, description: errorMsg }));
+                            else toast.error(errorMsg);
                         }
                         setLoading(false);
                     }
-                } catch (err: any) {
+                } catch (err: unknown) {
                     // Allow Next.js redirect to propagate
-                    if (err?.name === 'NEXT_REDIRECT' || err?.digest?.includes('NEXT_REDIRECT')) {
+                    if (
+                        typeof err === 'object' &&
+                        err !== null &&
+                        (err as { name?: string }).name === 'NEXT_REDIRECT'
+                    ) {
                         throw err;
                     }
-                    const errorMsg = typeof err === 'string' ? err : err?.message || 'Terjadi kesalahan tidak terduga';
+                    if (
+                        typeof err === 'object' &&
+                        err !== null &&
+                        (err as { digest?: string }).digest?.includes('NEXT_REDIRECT')
+                    ) {
+                        throw err;
+                    }
+                    const errorMsg = typeof err === 'string' ? err : (err as { message?: string }).message || 'Terjadi kesalahan tidak terduga';
                     toast.error(errorMsg);
                     setLoading(false);
                 }

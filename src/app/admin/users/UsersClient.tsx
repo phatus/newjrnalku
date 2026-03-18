@@ -20,8 +20,9 @@ export default function UsersClient({ initialUsers }: { initialUsers: Profile[] 
             await updateUserRole(id, newRole);
             setUsers(users.map(u => u.id === id ? { ...u, role: newRole } : u));
             toast.success('Peran pengguna berhasil diperbarui');
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         } finally {
             setLoadingId(null);
         }
@@ -40,8 +41,9 @@ export default function UsersClient({ initialUsers }: { initialUsers: Profile[] 
             toast.success("Password berhasil diperbarui");
             setEditingPasswordId(null);
             setNewPassword("");
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         } finally {
             setLoadingId(null);
         }
@@ -54,8 +56,9 @@ export default function UsersClient({ initialUsers }: { initialUsers: Profile[] 
             await deleteUser(id);
             setUsers(users.filter(u => u.id !== id));
             toast.success('Pengguna berhasil dihapus');
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         } finally {
             setLoadingId(null);
         }

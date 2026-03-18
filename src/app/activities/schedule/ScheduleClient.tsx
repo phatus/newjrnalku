@@ -60,9 +60,10 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
                 } else {
                     toast.error(`Gagal menghapus: ${result?.error || 'Terjadi kesalahan sistem'}`);
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error("DEBUG: Delete error", err);
-                toast.error(`Gagal menghapus: ${err.message}`);
+                const error = err as { message?: string };
+                toast.error(`Gagal menghapus: ${error.message || 'Terjadi kesalahan'}`);
             }
         });
     };
@@ -108,8 +109,8 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
                                     </div>
 
                                     <div className="grid gap-3">
-                                        {daySchedules.map((item: any) => {
-                                            const classNames = item.schedule_class_rooms?.map((p: any) => p.class_rooms?.name).filter(Boolean).join(', ');
+                                        {daySchedules.map((item: Schedule) => {
+                                            const classNames = item.schedule_class_rooms?.map((p) => p.class_rooms?.name).filter(Boolean).join(', ');
 
                                             return (
                                                 <div key={item.id} className="group bg-white p-5 rounded-3xl border border-slate-100 hover:border-amber-100 hover:shadow-xl hover:shadow-amber-50/50 transition-all flex items-center gap-5">

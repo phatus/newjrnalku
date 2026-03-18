@@ -85,7 +85,7 @@ export async function GET(request: Request) {
                     return null
                 }
 
-                let schoolName = findValue('Nama') || html.match(/<h[234][^>]*>\s*([^<]+)/i)?.[1]?.trim()
+                const schoolName = findValue('Nama') || html.match(/<h[234][^>]*>\s*([^<]+)/i)?.[1]?.trim()
                 const address = findValue('Alamat')
                 const type = findValue('Bentuk\\s*Pendidikan')
 

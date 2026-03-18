@@ -19,8 +19,9 @@ export default function ClassesClient({ initialClasses }: { initialClasses: Clas
             await createClass(formData);
             toast.success('Kelas berhasil ditambahkan');
             window.location.reload();
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         }
     }
 
@@ -31,8 +32,9 @@ export default function ClassesClient({ initialClasses }: { initialClasses: Clas
             await deleteClass(id);
             setClasses(classes.filter(c => c.id !== id));
             toast.success('Kelas berhasil dihapus');
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         } finally {
             setLoadingId(null);
         }

@@ -4,16 +4,14 @@ import React, { useState, useEffect, useMemo } from "react";
 import {
     ChevronLeft,
     Search,
-    Filter,
     Trash2,
     FileText,
     BookOpen,
+    ExternalLink,
     Calendar,
     Clock,
-    MapPin,
-    ExternalLink,
-    Loader2,
     AlertCircle,
+    Loader2,
     CheckCircle2
 } from "lucide-react";
 import Link from "next/link";
@@ -82,8 +80,9 @@ export default function ActivitiesClient({
             await deleteActivity(itemToDelete);
             setActivities(activities.filter(a => a.id !== itemToDelete));
             toast.success('Kegiatan berhasil dihapus');
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         } finally {
             setLoadingId(null);
             setItemToDelete(null);

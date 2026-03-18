@@ -104,9 +104,10 @@ export async function saveSchedule(formData: FormData) {
         revalidatePath('/activities/schedule')
         revalidatePath('/')
         return { success: true }
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('SERVER ACTION: saveSchedule Error', e)
-        return { success: false, error: e.message || 'Terjadi kesalahan sistem' }
+        const err = e as { message?: string };
+        return { success: false, error: err.message || 'Terjadi kesalahan sistem' }
     }
 }
 
@@ -137,9 +138,10 @@ export async function deleteSchedule(id: number) {
         revalidatePath('/activities/schedule')
         revalidatePath('/')
         return { success: true }
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('SERVER ACTION: deleteSchedule Error', e)
-        return { success: false, error: e.message || 'Gagal menghapus jadwal' }
+        const err = e as { message?: string };
+        return { success: false, error: err.message || 'Gagal menghapus jadwal' }
     }
 }
 
@@ -212,9 +214,10 @@ export async function updateSchedule(id: number, formData: FormData) {
         revalidatePath('/activities/schedule')
         revalidatePath('/')
         return { success: true }
-    } catch (e: any) {
+    } catch (e: unknown) {
         console.error('SERVER ACTION: updateSchedule Error:', e)
-        return { success: false, error: e.message || 'Gagal memperbarui jadwal' }
+        const err = e as { message?: string };
+        return { success: false, error: err.message || 'Gagal memperbarui jadwal' };
     }
 }
 

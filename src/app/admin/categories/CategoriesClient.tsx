@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { ChevronLeft, Plus, Trash2, Tag, Loader2, X, Edit } from "lucide-react";
 import Link from "next/link";
 import { createCategory, deleteCategory, updateCategory } from "@/app/admin/actions";
-import { cn } from "@/lib/utils";
 import { toast } from 'sonner';
 import type { Category } from "@/types";
 
@@ -22,8 +21,9 @@ export default function AdminCategoriesClient({ initialCategories }: { initialCa
             await createCategory(formData);
             toast.success('Kategori berhasil ditambahkan');
             window.location.reload(); // Simple way to refresh data
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         }
     }
 
@@ -34,8 +34,9 @@ export default function AdminCategoriesClient({ initialCategories }: { initialCa
             await updateCategory(editingCategory!.id, formData);
             toast.success('Kategori berhasil diperbarui');
             window.location.reload(); // Simple way to refresh data
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         }
     }
 
@@ -58,8 +59,9 @@ export default function AdminCategoriesClient({ initialCategories }: { initialCa
             await deleteCategory(id);
             setCategories(categories.filter(c => c.id !== id));
             toast.success('Kategori berhasil dihapus');
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         } finally {
             setLoadingId(null);
         }

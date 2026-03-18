@@ -50,7 +50,7 @@ export default async function LabulReportPage(props: {
         const rhk = act.category?.rhk_label || "Lain-lain";
 
         // For teaching activities, add prefix and use topic (Nama Pelajaran)
-        let baseDesc = act.category?.is_teaching ? (act.topic || act.description) : act.description;
+        const baseDesc = act.category?.is_teaching ? (act.topic || act.description) : act.description;
         let displayDesc = act.category?.is_teaching ? `Melaksanakan kegiatan pembelajaran ${baseDesc}` : baseDesc;
 
         // Add classes if available

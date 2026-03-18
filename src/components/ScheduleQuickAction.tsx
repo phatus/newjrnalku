@@ -43,7 +43,7 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
     const handleConfirm = async (id: number, mat?: string, cap?: string) => {
         setLoading(id)
         try {
-            const result = await convertScheduleToActivity(id, selectedDate, mat, cap) as any
+            const result = await convertScheduleToActivity(id, selectedDate, mat, cap) as { success: boolean; error?: string }
 
             if (result && result.success === false) {
                 toast.error(result.error || 'Terjadi kesalahan.')

@@ -19,8 +19,9 @@ export default function BasesClient({ initialBases }: { initialBases: Implementa
             await createBase(formData);
             toast.success('Dasar pelaksanaan berhasil ditambahkan');
             window.location.reload();
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         }
     }
 
@@ -31,8 +32,9 @@ export default function BasesClient({ initialBases }: { initialBases: Implementa
             await deleteBase(id);
             setBases(bases.filter(b => b.id !== id));
             toast.success('Dasar pelaksanaan berhasil dihapus');
-        } catch (err: any) {
-            toast.error(err.message);
+        } catch (err: unknown) {
+            const error = err as { message?: string };
+            toast.error(error.message || 'Terjadi kesalahan');
         } finally {
             setLoadingId(null);
         }
