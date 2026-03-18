@@ -19,8 +19,8 @@ export default async function LabulReportPage(props: {
     const adminSupa = createAdminClient();
     const { data: profile } = await adminSupa.from('profiles').select('*, school:schools(*)').eq('id', user.id).maybeSingle();
 
-    // month is already 1-12, so we use month+1 to get last day of current month
-    const lastDate = new Date(year, month + 1, 0); // Date object for last day of month
+    // month is 1-12, use new Date(year, month, 0) to get last day of that month
+    const lastDate = new Date(year, month, 0); // Date object for last day of month
     const lastDay = lastDate.getDate();
     const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
     const endDate = `${year}-${month.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
