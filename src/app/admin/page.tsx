@@ -42,7 +42,7 @@ export default async function AdminPage() {
                         <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Panel Kontrol</span>
                         <h1 className="text-3xl font-black text-slate-900 tracking-tight mt-1">Administrasi</h1>
                     </div>
-                    <UserIdentity profile={profile} user={user} />
+                    <UserIdentity profile={profile} user={user!} />
                 </div>
             </div>
 

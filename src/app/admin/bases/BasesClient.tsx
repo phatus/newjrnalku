@@ -4,8 +4,10 @@ import React, { useState } from "react";
 import { ChevronLeft, Plus, Trash2, FileText, Loader2, X } from "lucide-react";
 import Link from "next/link";
 import { createBase, deleteBase } from "@/app/admin/actions";
+import { toast } from 'sonner';
+import type { ImplementationBase } from "@/types";
 
-export default function BasesClient({ initialBases }: { initialBases: any[] }) {
+export default function BasesClient({ initialBases }: { initialBases: ImplementationBase[] }) {
     const [bases, setBases] = useState(initialBases);
     const [isAdding, setIsAdding] = useState(false);
     const [loadingId, setLoadingId] = useState<number | null>(null);
@@ -15,9 +17,10 @@ export default function BasesClient({ initialBases }: { initialBases: any[] }) {
         const formData = new FormData(e.currentTarget);
         try {
             await createBase(formData);
+            toast.success('Dasar pelaksanaan berhasil ditambahkan');
             window.location.reload();
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         }
     }
 
@@ -27,8 +30,9 @@ export default function BasesClient({ initialBases }: { initialBases: any[] }) {
         try {
             await deleteBase(id);
             setBases(bases.filter(b => b.id !== id));
+            toast.success('Dasar pelaksanaan berhasil dihapus');
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setLoadingId(null);
         }

@@ -52,7 +52,7 @@ export async function createCategory(formData: FormData) {
     revalidatePath('/master-data/categories');
 }
 
-export async function updateCategory(id: string, formData: FormData) {
+export async function updateCategory(id: number, formData: FormData) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
@@ -73,13 +73,13 @@ export async function updateCategory(id: string, formData: FormData) {
         name,
         rhk_label,
         is_teaching
-    }).eq('id', id).eq('user_id', user.id);
+    }).eq('id', id as any).eq('user_id', user.id); // Cast to any for Supabase compatibility
 
     if (error) throw error;
     revalidatePath('/master-data/categories');
 }
 
-export async function deleteCategory(id: string) {
+export async function deleteCategory(id: number) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
@@ -132,7 +132,7 @@ export async function createClassRoom(formData: FormData) {
     revalidatePath('/master-data/classes');
 }
 
-export async function deleteClassRoom(id: string) {
+export async function deleteClassRoom(id: number) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");
@@ -185,7 +185,7 @@ export async function createBase(formData: FormData) {
     revalidatePath('/master-data/bases');
 }
 
-export async function deleteBase(id: string) {
+export async function deleteBase(id: number) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) throw new Error("Unauthorized");

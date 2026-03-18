@@ -20,6 +20,8 @@ import Link from "next/link";
 import { deleteActivity } from "@/app/activities/actions";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { toast } from 'sonner';
+import type { Activity } from "@/types";
 
 interface ActivitiesClientProps {
     initialActivities: Activity[];
@@ -27,20 +29,6 @@ interface ActivitiesClientProps {
     currentYear?: number;
     message?: string;
     type?: string;
-}
-
-interface Activity {
-    id: string;
-    description: string;
-    activity_date: string;
-    category?: {
-        name?: string;
-        is_teaching?: boolean;
-    } | null;
-    teaching_hours?: number | string | null;
-    classes?: Array<{ class?: { id?: number; name?: string } }> | null;
-    basis?: { name?: string } | null;
-    evidence_link?: string | null;
 }
 
 export default function ActivitiesClient({
@@ -67,7 +55,7 @@ export default function ActivitiesClient({
 
     const filteredActivities = activities.filter((act: Activity) =>
         act.description.toLowerCase().includes(search.toLowerCase()) ||
-        (act.category?.name || '').toLowerCase().includes(search.toLowerCase())
+        (act.category?.name || '').toLowerCase() === search.toLowerCase()
     );
 
     const months = [
@@ -93,8 +81,9 @@ export default function ActivitiesClient({
         try {
             await deleteActivity(itemToDelete);
             setActivities(activities.filter(a => a.id !== itemToDelete));
+            toast.success('Kegiatan berhasil dihapus');
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setLoadingId(null);
             setItemToDelete(null);

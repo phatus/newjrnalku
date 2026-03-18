@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, BarChart2, User, PlusCircle } from "lucide-react";
+import { Home, ClipboardList, BarChart2, User as UserIcon, PlusCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -11,11 +11,13 @@ const navItems = [
     { name: "Kegiatan", href: "/activities", icon: ClipboardList },
     { name: "Tambah", href: "/activities/create", icon: PlusCircle, isSpecial: true },
     { name: "Laporan", href: "/reports", icon: BarChart2 },
-    { name: "Profil", href: "/profile", icon: User },
+    { name: "Profil", href: "/profile", icon: UserIcon },
 ];
 
+import type { User } from "@/types";
+
 interface MobileNavProps {
-    user: any;
+    user: User | null;
 }
 
 export default function MobileNav({ user }: MobileNavProps) {

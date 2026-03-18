@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import { Plus, Trash2, Info, Layers, CheckCircle2 } from "lucide-react";
 import { createClassRoom, deleteClassRoom } from "../actions";
 import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
+import type { ClassRoom } from "@/types";
 
 interface ClassesClientProps {
-    allClassRooms: any[];
-    userOnlyClassRooms: any[];
+    allClassRooms: ClassRoom[];
+    userOnlyClassRooms: ClassRoom[];
 }
 
 export default function ClassesClient({ allClassRooms, userOnlyClassRooms }: ClassesClientProps) {
@@ -21,23 +23,25 @@ export default function ClassesClient({ allClassRooms, userOnlyClassRooms }: Cla
 
         try {
             await createClassRoom(formData);
+            toast.success('Kelas berhasil ditambahkan');
             setIsAdding(false);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving class:", error);
-            alert("Gagal menyimpan kelas.");
+            toast.error(error.message || "Gagal menyimpan kelas.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: number) => {
         if (!confirm("Hapus kelas ini?")) return;
         setIsLoading(true);
         try {
             await deleteClassRoom(id);
-        } catch (error) {
+            toast.success('Kelas berhasil dihapus');
+        } catch (error: any) {
             console.error("Error deleting class:", error);
-            alert("Gagal menghapus kelas.");
+            toast.error(error.message || "Gagal menghapus kelas.");
         } finally {
             setIsLoading(false);
         }

@@ -6,16 +6,18 @@ import { deleteSchedule } from "./actions";
 import ScheduleForm from "@/components/ScheduleForm";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { toast } from 'sonner';
+import type { Schedule, Category, ClassRoom, ImplementationBase } from "@/types";
 
 interface ScheduleClientProps {
-    schedules: any[];
-    categories: any[];
-    classes: any[];
-    bases: any[];
+    schedules: Schedule[];
+    categories: Category[];
+    classes: ClassRoom[];
+    bases: ImplementationBase[];
 }
 
 export default function ScheduleClient({ schedules, categories, classes, bases }: ScheduleClientProps) {
-    const [editingSchedule, setEditingSchedule] = useState<any>(null);
+    const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
@@ -24,17 +26,17 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
     ];
 
     // Group schedules by day
-    const groupedSchedules = schedules.reduce((acc: any, s: any) => {
+    const groupedSchedules = schedules.reduce((acc: Record<number, Schedule[]>, s: Schedule) => {
         const day = s.day_of_week;
         if (!acc[day]) acc[day] = [];
         acc[day].push(s);
         return acc;
-    }, {});
+    }, {} as Record<number, Schedule[]>);
 
     // Sort days starting from Monday (1) to Sunday (0)
     const sortedDayIndexes = [1, 2, 3, 4, 5, 6, 0];
 
-    const handleEdit = (schedule: any) => {
+    const handleEdit = (schedule: Schedule) => {
         console.log("DEBUG: Editing schedule", schedule.id);
         setEditingSchedule(schedule);
         // Scroll to form
@@ -44,22 +46,23 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
         }
     };
 
-    const handleDelete = async (id: string, topic: string) => {
+    const handleDelete = async (id: number, topic: string) => {
         if (!confirm(`Hapus jadwal "${topic}"?`)) return;
-        
+
         console.log("DEBUG: Deleting schedule", id);
         startTransition(async () => {
             try {
                 const result = await deleteSchedule(id);
                 console.log("DEBUG: Delete result", result);
                 if (result?.success) {
+                    toast.success('Jadwal berhasil dihapus');
                     router.refresh();
                 } else {
-                    alert(`Gagal menghapus: ${result?.error || 'Terjadi kesalahan sistem'}`);
+                    toast.error(`Gagal menghapus: ${result?.error || 'Terjadi kesalahan sistem'}`);
                 }
             } catch (err: any) {
                 console.error("DEBUG: Delete error", err);
-                alert(`Gagal menghapus: ${err.message}`);
+                toast.error(`Gagal menghapus: ${err.message}`);
             }
         });
     };

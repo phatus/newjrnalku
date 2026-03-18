@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
 import { cn } from "@/lib/utils";
+import type { Profile, User } from "@/types";
 
 interface UserIdentityProps {
-    profile: any;
-    user: any;
+    profile: Profile | null;
+    user: User;
     className?: string;
 }
 

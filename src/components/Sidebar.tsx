@@ -3,10 +3,11 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, BarChart2, User, PlusCircle, LogOut, Settings, Shield, Database, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, ClipboardList, BarChart2, User as UserIcon, PlusCircle, LogOut, Settings, Shield, Database, Globe, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/auth/actions";
 import { APP_VERSION_LABEL } from "@/lib/version";
+import type { Profile, User } from "@/types";
 
 const navItems = [
     { name: "Beranda", href: "/", icon: Home },
@@ -14,12 +15,12 @@ const navItems = [
     { name: "Kelola Jadwal", href: "/activities/schedule", icon: Settings },
     { name: "Pusat Laporan", href: "/reports", icon: BarChart2 },
     { name: "Data Master", href: "/master-data", icon: Database },
-    { name: "Profil Saya", href: "/profile", icon: User },
+    { name: "Profil Saya", href: "/profile", icon: UserIcon },
 ];
 
 interface SidebarProps {
-    user: any;
-    profile: any;
+    user: User | null;
+    profile: Profile | null;
     isCollapsed?: boolean;
     toggleCollapse?: () => void;
 }
@@ -98,7 +99,7 @@ export default function Sidebar({ user, profile, isCollapsed, toggleCollapse }: 
                         );
                     })}
 
-                    {['admin', 'super_admin'].includes(profile?.role) && (
+                    {profile?.role && ['admin', 'super_admin'].includes(profile.role) && (
                         <Link
                             href="/admin"
                             className={cn(

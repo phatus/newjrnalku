@@ -4,6 +4,7 @@ import "./globals.css";
 import { createClient } from "@/utils/supabase/server";
 import { cn } from "@/lib/utils";
 import ClientLayout from "@/components/ClientLayout";
+import { ToastProvider } from "@/components/ToastProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -43,9 +44,11 @@ export default async function RootLayout({
   return (
     <html lang="id" suppressHydrationWarning>
       <body className={cn(inter.className, "bg-slate-50 text-slate-900 antialiased")}>
-        <ClientLayout user={user} profile={profile}>
-          {children}
-        </ClientLayout>
+        <ToastProvider>
+          <ClientLayout user={user} profile={profile}>
+            {children}
+          </ClientLayout>
+        </ToastProvider>
       </body>
     </html>
   );

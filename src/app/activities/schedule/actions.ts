@@ -110,7 +110,7 @@ export async function saveSchedule(formData: FormData) {
     }
 }
 
-export async function deleteSchedule(id: string) {
+export async function deleteSchedule(id: number) {
     try {
         console.log('SERVER ACTION: deleteSchedule started', id)
         const supabase = await createClient()
@@ -143,7 +143,7 @@ export async function deleteSchedule(id: string) {
     }
 }
 
-export async function updateSchedule(id: string, formData: FormData) {
+export async function updateSchedule(id: number, formData: FormData) {
     try {
         console.log('SERVER ACTION: updateSchedule started', id)
         const supabase = await createClient()
@@ -219,9 +219,9 @@ export async function updateSchedule(id: string, formData: FormData) {
 }
 
 export async function convertScheduleToActivity(
-    scheduleId: string, 
-    date: string, 
-    learningMaterial?: string, 
+    scheduleId: number,
+    date: string,
+    learningMaterial?: string,
     learningOutcome?: string
 ) {
     const supabase = await createClient()

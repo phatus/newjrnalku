@@ -5,14 +5,16 @@ import { Plus, Tag, AlignLeft, Briefcase, Users, Clock, BookOpen } from "lucide-
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { saveSchedule, updateSchedule } from "@/app/activities/schedule/actions";
+import { toast } from 'sonner';
+import type { Category, ClassRoom, ImplementationBase, Schedule } from "@/types";
 
 interface ScheduleFormProps {
-    categories: any[];
-    classes: any[];
-    bases: any[];
-    initialData?: any;
+    categories: Category[];
+    classes: ClassRoom[];
+    bases: ImplementationBase[];
+    initialData?: Schedule | null;
     onCancel?: () => void;
-    allSchedules?: any[]; // Added to find siblings
+    allSchedules?: Schedule[]; // Added to find siblings
 }
 
 export default function ScheduleForm({ categories, classes, bases, initialData, onCancel, allSchedules }: ScheduleFormProps) {
@@ -27,7 +29,7 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
     React.useEffect(() => {
         if (initialData) {
             setSelectedCategoryId(initialData.category_id?.toString() || "");
-            setSelectedClassIds(initialData.schedule_class_rooms?.map((p: any) => p.class_room_id?.toString()) || []);
+            setSelectedClassIds(initialData.schedule_class_rooms?.map((p) => p.class_room_id?.toString()) || []);
             
             // Find siblings to get all days
             if (allSchedules) {
@@ -89,7 +91,7 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
                             }
 
                             if (result?.success) {
-                                alert(initialData ? "Jadwal diperbarui!" : "Jadwal disimpan!");
+                                toast.success(initialData ? "Jadwal berhasil diperbarui!" : "Jadwal berhasil disimpan!");
                                 router.refresh();
                                 if (initialData && onCancel) onCancel();
                                 if (!initialData) {
@@ -98,11 +100,11 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
                                     setSelectedCategoryId("");
                                 }
                             } else {
-                                alert(`Gagal menyimpan: ${result?.error || 'Terjadi kesalahan sistem'}`);
+                                toast.error(`Gagal menyimpan: ${result?.error || 'Terjadi kesalahan sistem'}`);
                             }
                         } catch (err: any) {
                             console.error('Submit Error:', err);
-                            alert(`Gagal menyimpan: ${err.message || 'Terjadi kesalahan sistem'}`);
+                            toast.error(`Gagal menyimpan: ${err.message || 'Terjadi kesalahan sistem'}`);
                         } finally {
                             setLoading(false);
                         }

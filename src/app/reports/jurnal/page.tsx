@@ -3,6 +3,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
 import { ReportHeader, ReportFooter, PrintButton, BackButton } from "@/components/ReportComponents";
 import { redirect } from "next/navigation";
+import type { Activity } from "@/types";
 
 export default async function JurnalReportPage(props: {
     searchParams: Promise<{ month?: string; year?: string }>;
@@ -101,7 +102,7 @@ export default async function JurnalReportPage(props: {
                 <tbody>
                     {(() => {
                         const dateSpans: Record<string, number> = {};
-                        (activities || []).forEach((act: any) => {
+                        (activities || []).forEach((act: Activity) => {
                             const d = act.activity_date;
                             dateSpans[d] = (dateSpans[d] || 0) + 1;
                         });
@@ -109,7 +110,7 @@ export default async function JurnalReportPage(props: {
                         let lastDate = "";
                         let globalNo = 0;
 
-                        return (activities || []).map((act: any, i: number) => {
+                        return (activities || []).map((act: Activity, i: number) => {
                             const isNewDate = act.activity_date !== lastDate;
                             if (isNewDate) {
                                 lastDate = act.activity_date;
@@ -124,7 +125,7 @@ export default async function JurnalReportPage(props: {
                             const fullMonthName = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][monthIndex];
 
                             const dateStr = `${day}/${String(monthIndex + 1).padStart(2, '0')}/${yearNum}`;
-                            const classNames = act.classes?.map((c: any) => c.class?.name).join(', ');
+                            const classNames = act.classes?.map((c) => c.class?.name).join(', ');
 
                             return (
                                 <tr key={act.id} className={i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>

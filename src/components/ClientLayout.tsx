@@ -4,11 +4,12 @@ import React, { useState, useEffect } from "react";
 import MobileNav from "@/components/MobileNav";
 import Sidebar from "@/components/Sidebar";
 import { cn } from "@/lib/utils";
+import type { Profile, User } from "@/types";
 
 interface ClientLayoutProps {
     children: React.ReactNode;
-    user: any;
-    profile: any;
+    user: User | null;
+    profile: Profile | null;
 }
 
 export default function ClientLayout({ children, user, profile }: ClientLayoutProps) {

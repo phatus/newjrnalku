@@ -1,24 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronLeft, Trash2, Shield, User, Loader2, Mail, Key, X, Save } from "lucide-react";
+import { ChevronLeft, Trash2, Shield, User as UserIcon, Loader2, Mail, Key, X, Save } from "lucide-react";
 import Link from "next/link";
 import { updateUserRole, deleteUser, updateUserPassword } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
+import type { Profile } from "@/types";
 
-export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
-    const [users, setUsers] = useState(initialUsers);
+export default function UsersClient({ initialUsers }: { initialUsers: Profile[] }) {
+    const [users, setUsers] = useState<Profile[]>((initialUsers || []) as Profile[]);
     const [loadingId, setLoadingId] = useState<string | null>(null);
     const [editingPasswordId, setEditingPasswordId] = useState<string | null>(null);
     const [newPassword, setNewPassword] = useState("");
 
-    async function handleRoleChange(id: string, newRole: string) {
+    async function handleRoleChange(id: string, newRole: 'user' | 'admin') {
         setLoadingId(id);
         try {
             await updateUserRole(id, newRole);
             setUsers(users.map(u => u.id === id ? { ...u, role: newRole } : u));
+            toast.success('Peran pengguna berhasil diperbarui');
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setLoadingId(null);
         }
@@ -27,18 +30,18 @@ export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
     async function handlePasswordUpdate() {
         if (!editingPasswordId || !newPassword) return;
         if (newPassword.length < 6) {
-            alert("Password minimal 6 karakter");
+            toast.error("Password minimal 6 karakter");
             return;
         }
 
         setLoadingId(editingPasswordId);
         try {
             await updateUserPassword(editingPasswordId, newPassword);
-            alert("Password berhasil diperbarui");
+            toast.success("Password berhasil diperbarui");
             setEditingPasswordId(null);
             setNewPassword("");
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setLoadingId(null);
         }
@@ -50,8 +53,9 @@ export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
         try {
             await deleteUser(id);
             setUsers(users.filter(u => u.id !== id));
+            toast.success('Pengguna berhasil dihapus');
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setLoadingId(null);
         }
@@ -139,7 +143,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-4">
                                             <div className={cn("h-12 w-12 rounded-2xl flex items-center justify-center shrink-0", user.role === 'admin' ? "bg-amber-100 text-amber-600" : "bg-blue-100 text-blue-600")}>
-                                                {user.role === 'admin' ? <Shield size={24} /> : <User size={24} />}
+                                                {user.role === 'admin' ? <Shield size={24} /> : <UserIcon size={24} />}
                                             </div>
                                             <div>
                                                 <p className="font-black text-slate-900 leading-none">{user.name}</p>
@@ -155,7 +159,7 @@ export default function UsersClient({ initialUsers }: { initialUsers: any[] }) {
                                         <select
                                             value={user.role}
                                             disabled={loadingId === user.id}
-                                            onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                                            onChange={(e) => handleRoleChange(user.id, e.target.value as 'user' | 'admin')}
                                             className={cn(
                                                 "h-10 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest border-none focus:ring-2",
                                                 user.role === 'admin' ? "bg-amber-50 text-amber-700 focus:ring-amber-500" : "bg-slate-100 text-slate-600 focus:ring-slate-400"

@@ -4,15 +4,17 @@ import React, { useState } from "react";
 import { Plus, Trash2, Edit2, Info, BookOpen, Layers, CheckCircle2 } from "lucide-react";
 import { createCategory, updateCategory, deleteCategory } from "../actions";
 import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
+import type { Category } from "@/types";
 
 interface CategoriesClientProps {
-    allCategories: any[];
-    userOnlyCategories: any[];
+    allCategories: Category[];
+    userOnlyCategories: Category[];
 }
 
 export default function CategoriesClient({ allCategories, userOnlyCategories }: CategoriesClientProps) {
     const [isAdding, setIsAdding] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<any>(null);
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -23,27 +25,30 @@ export default function CategoriesClient({ allCategories, userOnlyCategories }: 
         try {
             if (editingCategory) {
                 await updateCategory(editingCategory.id, formData);
+                toast.success('Kategori berhasil diperbarui');
             } else {
                 await createCategory(formData);
+                toast.success('Kategori berhasil ditambahkan');
             }
             setIsAdding(false);
             setEditingCategory(null);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving category:", error);
-            alert("Gagal menyimpan kategori.");
+            toast.error(error.message || "Gagal menyimpan kategori.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: number) => {
         if (!confirm("Hapus kategori ini?")) return;
         setIsLoading(true);
         try {
             await deleteCategory(id);
-        } catch (error) {
+            toast.success('Kategori berhasil dihapus');
+        } catch (error: any) {
             console.error("Error deleting category:", error);
-            alert("Gagal menghapus kategori.");
+            toast.error(error.message || "Gagal menghapus kategori.");
         } finally {
             setIsLoading(false);
         }

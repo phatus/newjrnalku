@@ -141,7 +141,7 @@ export default async function Dashboard({
               </div>
             ) : (
               <div className="flex w-full h-full items-end justify-between gap-2">
-                {monthlyStats.counts.map((count: any, i: number) => {
+                {monthlyStats.counts.map((count, i: number) => {
                   const max = Math.max(...monthlyStats.counts, 1);
                   const heightPercent = Math.max(5, (count / max) * 100); // min 5% for visibility
                   return (

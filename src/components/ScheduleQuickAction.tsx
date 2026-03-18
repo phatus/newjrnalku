@@ -4,9 +4,11 @@ import React, { useState, useEffect } from 'react'
 import { CheckCircle2, Calendar, Clock, ArrowRight, Book, Target, Save, X } from 'lucide-react'
 import { convertScheduleToActivity } from '@/app/activities/schedule/actions'
 import { cn } from '@/lib/utils'
+import { toast } from 'sonner'
+import type { Schedule } from "@/types";
 
 interface ScheduleItem {
-    id: string
+    id: number
     topic: string
     day_of_week: number
     teaching_hours?: string
@@ -15,13 +17,13 @@ interface ScheduleItem {
     schedule_class_rooms?: { class_rooms: { name: string } }[]
 }
 
-export default function ScheduleQuickAction({ initialSchedules, selectedDate }: { initialSchedules: any[], selectedDate: string }) {
+export default function ScheduleQuickAction({ initialSchedules, selectedDate }: { initialSchedules: Schedule[], selectedDate: string }) {
     const [todaySchedules, setTodaySchedules] = useState<ScheduleItem[]>([])
-    const [loading, setLoading] = useState<string | null>(null)
-    const [completed, setCompleted] = useState<string[]>([])
+    const [loading, setLoading] = useState<number | null>(null)
+    const [completed, setCompleted] = useState<number[]>([])
     
     // KBM Input States
-    const [isInputting, setIsInputting] = useState<string | null>(null)
+    const [isInputting, setIsInputting] = useState<number | null>(null)
     const [materi, setMateri] = useState('')
     const [capaian, setCapaian] = useState('')
 
@@ -29,8 +31,8 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
         // Parse the selectedDate to get the day of the week (0-6)
         const dateObj = new Date(selectedDate)
         const dayOfWeek = dateObj.getDay()
-        
-        const filtered = initialSchedules.filter(s => s.day_of_week === dayOfWeek)
+
+        const filtered = initialSchedules.filter(s => s.day_of_week === dayOfWeek) as ScheduleItem[]
         setTodaySchedules(filtered)
 
         // Mark as completed if already confirmed on server
@@ -38,25 +40,26 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
         setCompleted(alreadyConfirmed)
     }, [initialSchedules, selectedDate])
 
-    const handleConfirm = async (id: string, mat?: string, cap?: string) => {
+    const handleConfirm = async (id: number, mat?: string, cap?: string) => {
         setLoading(id)
         try {
             const result = await convertScheduleToActivity(id, selectedDate, mat, cap) as any
 
             if (result && result.success === false) {
-                alert(result.error || 'Terjadi kesalahan.')
+                toast.error(result.error || 'Terjadi kesalahan.')
                 if (result.error?.includes('sudah dibuat')) {
                     setCompleted(prev => [...prev, id])
                 }
             } else {
                 setCompleted(prev => [...prev, id])
+                toast.success('Kegiatan berhasil dicatat dari jadwal!')
                 setIsInputting(null)
                 setMateri('')
                 setCapaian('')
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Failed to confirm schedule:', error)
-            alert('Gagal mencatat kegiatan. Silakan coba lagi.')
+            toast.error(error.message || 'Gagal mencatat kegiatan. Silakan coba lagi.')
         } finally {
             setLoading(null)
         }

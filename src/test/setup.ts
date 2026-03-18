@@ -15,3 +15,13 @@ vi.mock('@/utils/supabase/server', () => ({
 vi.mock('@/utils/supabase/admin', () => ({
     createAdminClient: vi.fn(),
 }))
+
+// Mock sonner toast
+vi.mock('sonner', () => ({
+    toast: {
+        success: vi.fn(),
+        error: vi.fn(),
+        info: vi.fn(),
+        warning: vi.fn(),
+    },
+}))

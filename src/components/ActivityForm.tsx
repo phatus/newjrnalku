@@ -22,12 +22,14 @@ import {
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { createActivity } from "@/app/activities/actions";
+import { toast } from 'sonner';
+import type { Category, ClassRoom, ImplementationBase, Activity } from "@/types";
 
 interface ActivityFormProps {
-    categories: any[];
-    classes: any[];
-    bases: any[];
-    initialData?: any;
+    categories: Category[];
+    classes: ClassRoom[];
+    bases: ImplementationBase[];
+    initialData?: Activity | null;
     action: (formData: FormData) => Promise<any>;
 }
 
@@ -35,7 +37,7 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
     const router = useRouter();
     const [selectedCategoryId, setSelectedCategoryId] = useState(initialData?.category_id?.toString() || "");
     const [selectedClassIds, setSelectedClassIds] = useState<string[]>(
-        initialData?.classes?.map((c: any) => c.class_room_id?.toString()) || []
+        initialData?.classes?.map((c) => c.class?.id?.toString()).filter((id): id is string => typeof id === 'string') || []
     );
     const [loading, setLoading] = useState(false);
 
@@ -69,7 +71,7 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                             if (result.error.includes("Tanggal")) setErrors(prev => ({ ...prev, activity_date: result.error }));
                             else if (result.error.includes("Kategori")) setErrors(prev => ({ ...prev, category_id: result.error }));
                             else if (result.error.includes("Deskripsi")) setErrors(prev => ({ ...prev, description: result.error }));
-                            else alert(result.error);
+                            else toast.error(result.error);
                         }
                         setLoading(false);
                     }
@@ -79,7 +81,7 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                         throw err;
                     }
                     const errorMsg = typeof err === 'string' ? err : err?.message || 'Terjadi kesalahan tidak terduga';
-                    alert(errorMsg);
+                    toast.error(errorMsg);
                     setLoading(false);
                 }
             }}

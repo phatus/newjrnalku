@@ -5,12 +5,14 @@ import { ChevronLeft, Plus, Trash2, Tag, Loader2, X, Edit } from "lucide-react";
 import Link from "next/link";
 import { createCategory, deleteCategory, updateCategory } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
+import type { Category } from "@/types";
 
-export default function AdminCategoriesClient({ initialCategories }: { initialCategories: any[] }) {
+export default function AdminCategoriesClient({ initialCategories }: { initialCategories: Category[] }) {
     const [categories, setCategories] = useState(initialCategories);
     const [isAdding, setIsAdding] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<any>(null);
+    const [editingCategory, setEditingCategory] = useState<Category | null>(null);
     const [loadingId, setLoadingId] = useState<number | null>(null);
 
     async function handleAdd(e: React.FormEvent<HTMLFormElement>) {
@@ -18,9 +20,10 @@ export default function AdminCategoriesClient({ initialCategories }: { initialCa
         const formData = new FormData(e.currentTarget);
         try {
             await createCategory(formData);
+            toast.success('Kategori berhasil ditambahkan');
             window.location.reload(); // Simple way to refresh data
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         }
     }
 
@@ -28,16 +31,18 @@ export default function AdminCategoriesClient({ initialCategories }: { initialCa
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
         try {
-            await updateCategory(editingCategory.id, formData);
+            await updateCategory(editingCategory!.id, formData);
+            toast.success('Kategori berhasil diperbarui');
             window.location.reload(); // Simple way to refresh data
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         }
     }
 
-    function startEdit(category: any) {
+    function startEdit(category: Category) {
         setEditingCategory(category);
         setIsEditing(true);
+        setIsAdding(false); // Close add form if open
     }
 
     function cancelEdit() {
@@ -52,8 +57,9 @@ export default function AdminCategoriesClient({ initialCategories }: { initialCa
         try {
             await deleteCategory(id);
             setCategories(categories.filter(c => c.id !== id));
+            toast.success('Kategori berhasil dihapus');
         } catch (err: any) {
-            alert(err.message);
+            toast.error(err.message);
         } finally {
             setLoadingId(null);
         }

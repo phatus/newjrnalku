@@ -78,7 +78,7 @@ export async function createSchool(formData: FormData) {
  * Initializes a new school with base data copied from a template school.
  * This ensures new schools have categories, classes, and bases to start with.
  */
-async function initializeSchoolData(newSchoolId: string, creatorId: string) {
+export async function initializeSchoolData(newSchoolId: string, creatorId: string) {
     const adminSupabase = createAdminClient();
 
     // TEMPLATE_SCHOOL_ID is the 'admin' school (Madrasah Tsanawiyah Negeri 1 Pacitan)

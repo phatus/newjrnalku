@@ -4,10 +4,12 @@ import React, { useState } from "react";
 import { Plus, Trash2, Info, Target, CheckCircle2 } from "lucide-react";
 import { createBase, deleteBase } from "../actions";
 import { cn } from "@/lib/utils";
+import { toast } from 'sonner';
+import type { ImplementationBase } from "@/types";
 
 interface BasesClientProps {
-    allBases: any[];
-    userOnlyBases: any[];
+    allBases: ImplementationBase[];
+    userOnlyBases: ImplementationBase[];
 }
 
 export default function BasesClient({ allBases, userOnlyBases }: BasesClientProps) {
@@ -21,23 +23,25 @@ export default function BasesClient({ allBases, userOnlyBases }: BasesClientProp
 
         try {
             await createBase(formData);
+            toast.success('Dasar pelaksanaan berhasil ditambahkan');
             setIsAdding(false);
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving base:", error);
-            alert("Gagal menyimpan dasar pelaksanaan.");
+            toast.error(error.message || "Gagal menyimpan dasar pelaksanaan.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleDelete = async (id: string) => {
+    const handleDelete = async (id: number) => {
         if (!confirm("Hapus dasar pelaksanaan ini?")) return;
         setIsLoading(true);
         try {
             await deleteBase(id);
-        } catch (error) {
+            toast.success('Dasar pelaksanaan berhasil dihapus');
+        } catch (error: any) {
             console.error("Error deleting base:", error);
-            alert("Gagal menghapus dasar pelaksanaan.");
+            toast.error(error.message || "Gagal menghapus dasar pelaksanaan.");
         } finally {
             setIsLoading(false);
         }

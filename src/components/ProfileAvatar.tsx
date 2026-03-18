@@ -6,6 +6,7 @@ import { createClient } from '@/utils/supabase/client'
 import { updateAvatarOnly } from '@/app/auth/actions'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 interface ProfileAvatarProps {
     uid: string
@@ -59,7 +60,7 @@ export default function ProfileAvatar({ uid, url, name, email }: ProfileAvatarPr
 
         } catch (error: any) {
             console.error('Upload Error:', error)
-            alert('Gagal mengunggah foto: ' + error.message)
+            toast.error('Gagal mengunggah foto: ' + error.message)
             // Rollback preview on error
             setPreviewUrl(url || null)
         } finally {
@@ -76,8 +77,9 @@ export default function ProfileAvatar({ uid, url, name, email }: ProfileAvatarPr
             setPreviewUrl(null)
             await updateAvatarOnly('')
             router.refresh()
+            toast.success('Foto profil berhasil dihapus');
         } catch (error: any) {
-            alert('Gagal menghapus foto: ' + error.message)
+            toast.error('Gagal menghapus foto: ' + error.message)
             setPreviewUrl(url || null)
         } finally {
             setUploading(false)
