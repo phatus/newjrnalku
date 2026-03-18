@@ -34,7 +34,7 @@ export function ReportHeader({ schoolName, schoolAddress }: { schoolName?: strin
     );
 }
 
-export function ReportFooter({ headmasterName, headmasterNip, profileName, profileNip, schoolName, schoolAddress, schoolCity }: {
+export function ReportFooter({ headmasterName, headmasterNip, profileName, profileNip, schoolName, schoolAddress, schoolCity, reportDate }: {
     headmasterName?: string;
     headmasterNip?: string;
     profileName?: string;
@@ -42,8 +42,11 @@ export function ReportFooter({ headmasterName, headmasterNip, profileName, profi
     schoolName?: string;
     schoolAddress?: string;
     schoolCity?: string;
+    reportDate?: Date;
 }) {
-    const today = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    // Use provided report date (usually end of month) or default to today
+    const dateToUse = reportDate || new Date();
+    const formattedDate = dateToUse.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
     // Prefer schoolCity, fallback to last word of address (legacy), fallback to Pacitan
     let location = schoolCity;
@@ -56,7 +59,7 @@ export function ReportFooter({ headmasterName, headmasterNip, profileName, profi
     return (
         <div className="mt-12 print:mt-8 signature-block border-t border-slate-100 pt-8 text-sm">
             <div className="flex justify-end mb-1">
-                <p className="font-bold w-1/2 text-center ml-auto pl-8">{location}, {today}</p>
+                <p className="font-bold w-1/2 text-center ml-auto pl-8">{location}, {formattedDate}</p>
             </div>
             <div className="grid grid-cols-2 gap-8 items-start">
                 {/* Left: Employee Signature Header */}

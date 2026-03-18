@@ -23,7 +23,8 @@ export default async function JurnalReportPage(props: {
     const { data: profile } = await adminSupa.from('profiles').select('*, school:schools(*)').eq('id', user.id).maybeSingle();
 
     // month is already 1-12, so we use month+1 to get last day of current month
-    const lastDay = new Date(year, month + 1, 0).getDate();
+    const lastDate = new Date(year, month + 1, 0); // Date object for last day of month
+    const lastDay = lastDate.getDate();
     const startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
     const endDate = `${year}-${month.toString().padStart(2, '0')}-${lastDay.toString().padStart(2, '0')}`;
 
@@ -167,6 +168,7 @@ export default async function JurnalReportPage(props: {
                 schoolName={profile?.school?.name}
                 schoolAddress={profile?.school?.address}
                 schoolCity={profile?.school?.city}
+                reportDate={lastDate}
             />
         </div>
     );
