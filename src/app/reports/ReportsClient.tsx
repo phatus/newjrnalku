@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Calendar, Filter, Download, ArrowRight, FileText, BookOpen, ClipboardCheck } from "lucide-react";
+import { Calendar, Download, ArrowRight, FileText, BookOpen, ClipboardCheck } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +11,7 @@ const iconMap: Record<string, React.ElementType> = {
     ClipboardCheck
 };
 
-export default function ReportsClient({ reportTypes }: { reportTypes: any[] }) {
+export default function ReportsClient({ reportTypes }: { reportTypes: Array<{ id: string; icon: string; bg: string; color: string; name: string; desc: string }> }) {
     const router = useRouter();
     const searchParams = useSearchParams();
 

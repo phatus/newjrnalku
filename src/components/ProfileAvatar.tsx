@@ -1,7 +1,8 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Camera, Loader2, User, MoreVertical, Trash2, Image as ImageIcon, Settings } from 'lucide-react'
+import Image from 'next/image'
+import { Loader2, Trash2, Image as ImageIcon, Settings } from 'lucide-react'
 import { createClient } from '@/utils/supabase/client'
 import { updateAvatarOnly } from '@/app/auth/actions'
 import { cn } from '@/lib/utils'
@@ -58,9 +59,10 @@ export default function ProfileAvatar({ uid, url, name, email }: ProfileAvatarPr
             // Force a refresh to update all components relying on server state
             router.refresh()
 
-        } catch (error: any) {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error('Upload Error:', error)
-            toast.error('Gagal mengunggah foto: ' + error.message)
+            toast.error('Gagal mengunggah foto: ' + errorMessage)
             // Rollback preview on error
             setPreviewUrl(url || null)
         } finally {
@@ -78,8 +80,9 @@ export default function ProfileAvatar({ uid, url, name, email }: ProfileAvatarPr
             await updateAvatarOnly('')
             router.refresh()
             toast.success('Foto profil berhasil dihapus');
-        } catch (error: any) {
-            toast.error('Gagal menghapus foto: ' + error.message)
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            toast.error('Gagal menghapus foto: ' + errorMessage)
             setPreviewUrl(url || null)
         } finally {
             setUploading(false)
@@ -92,13 +95,16 @@ export default function ProfileAvatar({ uid, url, name, email }: ProfileAvatarPr
                 className="h-32 w-32 rounded-[2.5rem] bg-white p-1.5 shadow-2xl relative cursor-pointer overflow-hidden group/avatar"
                 onClick={() => setShowMenu(!showMenu)}
             >
-                <img
+                <Image
                     src={previewUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${name || email || 'user'}`}
                     alt="Avatar"
+                    width={128}
+                    height={128}
                     className={cn(
                         "h-full w-full object-cover rounded-[2rem] transition-all duration-500",
                         uploading ? "opacity-30 blur-sm" : "group-hover/avatar:scale-110"
                     )}
+                    unoptimized
                 />
 
                 {uploading && (

@@ -25,9 +25,10 @@ export default function BasesClient({ allBases, userOnlyBases }: BasesClientProp
             await createBase(formData);
             toast.success('Dasar pelaksanaan berhasil ditambahkan');
             setIsAdding(false);
-        } catch (error: any) {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error("Error saving base:", error);
-            toast.error(error.message || "Gagal menyimpan dasar pelaksanaan.");
+            toast.error(errorMessage || "Gagal menyimpan dasar pelaksanaan.");
         } finally {
             setIsLoading(false);
         }
@@ -39,9 +40,10 @@ export default function BasesClient({ allBases, userOnlyBases }: BasesClientProp
         try {
             await deleteBase(id);
             toast.success('Dasar pelaksanaan berhasil dihapus');
-        } catch (error: any) {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error("Error deleting base:", error);
-            toast.error(error.message || "Gagal menghapus dasar pelaksanaan.");
+            toast.error(errorMessage || "Gagal menghapus dasar pelaksanaan.");
         } finally {
             setIsLoading(false);
         }

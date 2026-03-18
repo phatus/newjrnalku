@@ -3,7 +3,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export async function seedInitialData(formData: FormData) {
+export async function seedInitialData(_formData: FormData) {
     const supabase = await createClient()
 
     // 1. Seed Categories

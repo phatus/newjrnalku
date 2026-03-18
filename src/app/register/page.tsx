@@ -14,7 +14,7 @@ export default function RegisterPage() {
     const message = searchParams.get("message");
     const type = searchParams.get("type");
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (_e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true);
     };
 

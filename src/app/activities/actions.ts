@@ -23,7 +23,7 @@ export async function createActivity(formData: FormData) {
     }
 
     const validatedData = validation.data
-    const { category_id, activity_date, description, evidence_link, implementation_basis_id, student_count, teaching_hours, topic, learning_material, learning_outcome, student_outcome, class_room_ids } = validatedData
+    const { category_id, activity_date, description, evidence_link, implementation_basis_id, teaching_hours, topic, learning_material, learning_outcome, student_outcome, class_room_ids } = validatedData
 
     // Get user's school_id
     const { data: profile } = await supabase.from('profiles').select('school_id').eq('id', user.id).maybeSingle()
@@ -279,7 +279,7 @@ export async function getDashboardStats() {
         }
     }
 }
-export async function seedInitialData(formData: FormData) {
+export async function seedInitialData(_formData: FormData) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Unauthorized')

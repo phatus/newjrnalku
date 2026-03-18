@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Ignore diagnostic/migration scripts (all .js files)
+    "**/*.js",
+    // Ignore coverage reports and temp files
+    "coverage/**",
+    "tmp/**",
   ]),
   {
     rules: {

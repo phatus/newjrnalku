@@ -25,9 +25,10 @@ export default function ClassesClient({ allClassRooms, userOnlyClassRooms }: Cla
             await createClassRoom(formData);
             toast.success('Kelas berhasil ditambahkan');
             setIsAdding(false);
-        } catch (error: any) {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error("Error saving class:", error);
-            toast.error(error.message || "Gagal menyimpan kelas.");
+            toast.error(errorMessage || "Gagal menyimpan kelas.");
         } finally {
             setIsLoading(false);
         }
@@ -39,9 +40,10 @@ export default function ClassesClient({ allClassRooms, userOnlyClassRooms }: Cla
         try {
             await deleteClassRoom(id);
             toast.success('Kelas berhasil dihapus');
-        } catch (error: any) {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error("Error deleting class:", error);
-            toast.error(error.message || "Gagal menghapus kelas.");
+            toast.error(errorMessage || "Gagal menghapus kelas.");
         } finally {
             setIsLoading(false);
         }

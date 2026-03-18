@@ -90,7 +90,7 @@ export default async function LabulReportPage(props: {
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Pratinjau: LABUL — {monthName} {year}</p>
                 <div className="flex gap-3">
                     <BackButton />
-                    <PrintButton label="Cetak LABUL" />
+                    <PrintButton />
                 </div>
             </div>
 

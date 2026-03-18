@@ -32,9 +32,10 @@ export default function CategoriesClient({ allCategories, userOnlyCategories }: 
             }
             setIsAdding(false);
             setEditingCategory(null);
-        } catch (error: any) {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error("Error saving category:", error);
-            toast.error(error.message || "Gagal menyimpan kategori.");
+            toast.error(errorMessage || "Gagal menyimpan kategori.");
         } finally {
             setIsLoading(false);
         }
@@ -46,9 +47,10 @@ export default function CategoriesClient({ allCategories, userOnlyCategories }: 
         try {
             await deleteCategory(id);
             toast.success('Kategori berhasil dihapus');
-        } catch (error: any) {
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
             console.error("Error deleting category:", error);
-            toast.error(error.message || "Gagal menghapus kategori.");
+            toast.error(errorMessage || "Gagal menghapus kategori.");
         } finally {
             setIsLoading(false);
         }

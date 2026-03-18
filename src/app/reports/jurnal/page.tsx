@@ -54,7 +54,7 @@ export default async function JurnalReportPage(props: {
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Pratinjau: JURNAL MENGAJAR — {monthName} {year}</p>
                 <div className="flex gap-3">
                     <BackButton />
-                    <PrintButton label="Cetak Jurnal" />
+                    <PrintButton />
                 </div>
             </div>
 

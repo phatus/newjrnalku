@@ -14,7 +14,7 @@ export default function LoginPage() {
     const message = searchParams.get("message") || searchParams.get("error");
     const type = searchParams.get("type") || (searchParams.get("error") ? "error" : "success");
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (_e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true);
     };
 

@@ -12,7 +12,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { getDashboardStats, getRecentActivities, getMonthlyStats } from "@/app/activities/actions";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
 import UserIdentity from "@/components/UserIdentity";
 import { getSchedules } from "@/app/activities/schedule/actions";
 import ScheduleQuickAction from "@/components/ScheduleQuickAction";
@@ -63,7 +62,7 @@ export default async function Dashboard({
   const stats = await getDashboardStats();
   const recentActivities = await getRecentActivities();
   const schedules = await getSchedules(selectedDate);
-  type MonthlyStats = { counts: number[]; raw: any[] };
+  type MonthlyStats = { counts: number[]; raw: unknown[] };
   const monthlyStats: MonthlyStats = await getMonthlyStats();
 
   const dashboardStats = [
@@ -135,7 +134,7 @@ export default async function Dashboard({
           </div>
           <div className="h-72 w-full bg-white rounded-[2.5rem] border border-slate-100 p-8 flex flex-col items-end justify-between gap-4 shadow-sm relative group overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-b from-slate-50/50 to-transparent pointer-events-none" />
-            {monthlyStats.counts.every((c: any) => c === 0) ? (
+            {monthlyStats.counts.every((c) => c === 0) ? (
               <div className="absolute inset-0 flex items-center justify-center text-center text-sm font-bold text-slate-400 uppercase tracking-widest">
                 Tidak ada data untuk statistik
               </div>

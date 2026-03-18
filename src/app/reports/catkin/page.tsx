@@ -66,7 +66,7 @@ export default async function CatkinReportPage(props: {
                 <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Pratinjau: CATKIN — {monthName} {year}</p>
                 <div className="flex gap-3">
                     <BackButton />
-                    <PrintButton label="Cetak CATKIN" />
+                    <PrintButton />
                 </div>
             </div>
 

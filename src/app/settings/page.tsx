@@ -2,7 +2,6 @@
 import React from "react";
 import { Building2, MapPin, UserCheck, Save, AlertCircle, CheckCircle2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
-import { createAdminClient } from "@/utils/supabase/admin";
 import { updateSettings } from "@/app/activities/actions";
 import { cn } from "@/lib/utils";
 import { redirect } from "next/navigation";
@@ -20,8 +19,6 @@ export default async function SettingsPage(props: {
     if (!user) {
         return redirect('/login');
     }
-
-    const adminSupa = createAdminClient();
 
     // Check role
     const { data: profile } = await supabase

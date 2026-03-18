@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { Plus, Tag, AlignLeft, Briefcase, Users, Clock, BookOpen } from "lucide-react";
+import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { saveSchedule, updateSchedule } from "@/app/activities/schedule/actions";
@@ -53,9 +53,6 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
         "Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"
     ];
 
-    const selectedCategory = categories.find(c => String(c.id) === selectedCategoryId);
-    const isTeaching = selectedCategory?.is_teaching || false;
-
     function toggleDay(index: number) {
         setSelectedDays(prev =>
             prev.includes(index) ? prev.filter(x => x !== index) : [...prev, index]
@@ -102,9 +99,10 @@ export default function ScheduleForm({ categories, classes, bases, initialData, 
                             } else {
                                 toast.error(`Gagal menyimpan: ${result?.error || 'Terjadi kesalahan sistem'}`);
                             }
-                        } catch (err: any) {
+                        } catch (err) {
+                            const errorMessage = err instanceof Error ? err.message : String(err);
                             console.error('Submit Error:', err);
-                            toast.error(`Gagal menyimpan: ${err.message || 'Terjadi kesalahan sistem'}`);
+                            toast.error(`Gagal menyimpan: ${errorMessage || 'Terjadi kesalahan sistem'}`);
                         } finally {
                             setLoading(false);
                         }

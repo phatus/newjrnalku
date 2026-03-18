@@ -81,6 +81,7 @@ export type AppActivity = {
   updated_at?: string;
   category?: {
     name: string;
+    rhk_label: string;
     is_teaching: boolean;
   } | null;
   basis?: {

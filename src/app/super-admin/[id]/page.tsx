@@ -107,7 +107,7 @@ export default async function SchoolDetailPage(props: {
                             </div>
                         ) : (
                             <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                                {members.map((member: any) => (
+                                {members.map((member: { id: string; name?: string | null; email?: string | null; role: string }) => (
                                     <div key={member.id} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
                                         <div className="flex items-center gap-3">
                                             <div className="h-9 w-9 rounded-lg bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-black">

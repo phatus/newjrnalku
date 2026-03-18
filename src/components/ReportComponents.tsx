@@ -2,7 +2,7 @@
 
 import React from "react";
 
-export function PrintButton({ label }: { label: string }) {
+export function PrintButton() {
     return (
         <button
             onClick={() => window.print()}

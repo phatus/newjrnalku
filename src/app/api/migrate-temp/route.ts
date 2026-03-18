@@ -43,8 +43,9 @@ export async function GET() {
             stats: result.rows[0]
         });
 
-    } catch (err: any) {
-        return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+    } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
     } finally {
         await client.end().catch(() => { });
     }

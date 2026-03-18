@@ -9,7 +9,7 @@ import {
     getActivityById,
     updateActivity
 } from "@/app/activities/actions";
-import { redirect, notFound } from "next/navigation";
+import { notFound } from "next/navigation";
 
 export default async function EditActivityPage(props: {
     params: Promise<{ id: string }>;

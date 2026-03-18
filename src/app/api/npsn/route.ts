@@ -1,5 +1,13 @@
 import { NextResponse } from 'next/server'
 
+interface SchoolData {
+    name: string;
+    address?: string | null;
+    type?: string | null;
+    city?: string | null;
+    kecamatan?: string | null;
+}
+
 // Helper to convert ALL CAPS to Title Case, with exceptions for acronyms
 function toTitleCase(str: string) {
     if (!str) return str;
@@ -61,7 +69,7 @@ export async function GET(request: Request) {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 20000) // 20s total timeout
 
-        let schoolData: any = null
+        let schoolData: SchoolData | null = null
 
         // --- Source 1: New Kemendikdasmen Domain (Primary) ---
         try {
@@ -127,7 +135,7 @@ export async function GET(request: Request) {
                     }
                 }
             } catch (e) {
-                console.warn('Source 2 failed')
+                console.warn('Source 2 failed:', e)
             }
         }
 
@@ -154,7 +162,7 @@ export async function GET(request: Request) {
                     }
                 }
             } catch (e) {
-                console.warn('Source 3 failed')
+                console.warn('Source 3 failed:', e)
             }
         }
 
@@ -175,7 +183,8 @@ export async function GET(request: Request) {
             ...schoolData
         })
 
-    } catch (error: any) {
-        return NextResponse.json({ error: 'Server error: ' + error.message }, { status: 500 })
+    } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        return NextResponse.json({ error: 'Server error: ' + errorMessage }, { status: 500 })
     }
 }

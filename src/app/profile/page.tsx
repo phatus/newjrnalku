@@ -1,7 +1,5 @@
 import React from "react";
 import {
-    User,
-    Settings,
     LogOut,
     ShieldCheck,
     MapPin,
@@ -12,8 +10,7 @@ import {
     Calendar,
     Lock,
     Bell,
-    Palette,
-    Award
+    Palette
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import { logout } from "@/app/auth/actions";

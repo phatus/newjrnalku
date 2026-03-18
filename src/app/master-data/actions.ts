@@ -73,7 +73,7 @@ export async function updateCategory(id: number, formData: FormData) {
         name,
         rhk_label,
         is_teaching
-    }).eq('id', id as any).eq('user_id', user.id); // Cast to any for Supabase compatibility
+    }).eq('id', id).eq('user_id', user.id);
 
     if (error) throw error;
     revalidatePath('/master-data/categories');

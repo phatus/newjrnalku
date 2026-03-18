@@ -17,6 +17,7 @@ export default function ClientLayout({ children, user, profile }: ClientLayoutPr
     const [mounted, setMounted] = useState(false);
 
     // Load saved state from localStorage on mount
+    /* eslint-disable react-hooks/set-state-in-effect */
     useEffect(() => {
         setMounted(true);
         const saved = localStorage.getItem("sidebar_collapsed");
@@ -24,6 +25,7 @@ export default function ClientLayout({ children, user, profile }: ClientLayoutPr
             setIsCollapsed(saved === "true");
         }
     }, []);
+    /* eslint-enable react-hooks/set-state-in-effect */
 
     const toggleCollapse = () => {
         const newState = !isCollapsed;

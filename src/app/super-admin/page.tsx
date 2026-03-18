@@ -1,5 +1,5 @@
 import React from "react";
-import { Globe, Building2, Users, ClipboardList, ArrowRight, Shield } from "lucide-react";
+import { Globe, Building2, Users, ClipboardList, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";

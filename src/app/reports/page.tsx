@@ -1,11 +1,8 @@
 import React from "react";
 import {
-    FileText,
     TrendingUp,
     History,
-    Search,
-    BookOpen,
-    ClipboardCheck
+    Search
 } from "lucide-react";
 import { createClient } from "@/utils/supabase/server";
 import { getDashboardStats } from "@/app/activities/actions";

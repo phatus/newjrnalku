@@ -38,6 +38,7 @@ const mockActivities = [
         activity_date: '2024-03-05',
         category: {
             name: 'KBM',
+            rhk_label: 'Proses Pembelajaran',
             is_teaching: true,
         },
         teaching_hours: 2,
@@ -54,6 +55,7 @@ const mockActivities = [
         activity_date: '2024-03-05',
         category: {
             name: 'Non-KBM',
+            rhk_label: 'Administrasi Sekolah',
             is_teaching: false,
         },
         teaching_hours: null,
@@ -70,6 +72,7 @@ const mockActivities = [
         activity_date: '2024-02-20',
         category: {
             name: 'KBM',
+            rhk_label: 'Proses Pembelajaran',
             is_teaching: true,
         },
         teaching_hours: 3,
@@ -316,7 +319,7 @@ describe('ActivitiesClient', () => {
                 category_id: '4',
                 description: 'Kegiatan baru',
                 activity_date: '2024-03-07',
-                category: { name: 'Baru', is_teaching: false },
+                category: { name: 'Baru', rhk_label: 'Lain-lain', is_teaching: false },
             },
         ];
         rerender(<ActivitiesClient initialActivities={newActivities} />);

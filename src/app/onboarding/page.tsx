@@ -20,7 +20,7 @@ export default function OnboardingPage() {
     const [npsn, setNpsn] = useState("");
     const [npsnLoading, setNpsnLoading] = useState(false);
     const [schoolData, setSchoolData] = useState<{ name: string; address: string | null; city: string | null; type: string | null } | null>(null);
-    const [npsnError, setNpsnError] = useState("");
+    const [npsnError, setNpsnError] = useState<React.ReactNode>("");
     const [npsnVerified, setNpsnVerified] = useState(false);
 
     const handleSubmit = () => {
@@ -76,7 +76,7 @@ export default function OnboardingPage() {
                             <a href={data.manual_url} target="_blank" rel="noopener noreferrer" className="underline hover:text-red-900 mt-1 inline-block">
                                 Klik di sini untuk cek manual di web Kemendikdasmen
                             </a>
-                        </span> as any
+                        </span>
                     );
                 } else {
                     setNpsnError(data.error || "Sekolah tidak ditemukan. Pastikan NPSN benar.");

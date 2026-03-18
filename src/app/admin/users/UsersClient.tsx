@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronLeft, Trash2, Shield, User as UserIcon, Loader2, Mail, Key, X, Save } from "lucide-react";
+import { ChevronLeft, Trash2, Shield, User as UserIcon, Loader2, Key, X, Save } from "lucide-react";
 import Link from "next/link";
 import { updateUserRole, deleteUser, updateUserPassword } from "@/app/admin/actions";
 import { cn } from "@/lib/utils";

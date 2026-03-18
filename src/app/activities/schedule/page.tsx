@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronLeft, Trash2, Calendar, Clock, BookOpen, Briefcase } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { getSchedules } from "./actions";
 import { getCategories, getClassRooms, getImplementationBases } from "@/app/activities/actions";
