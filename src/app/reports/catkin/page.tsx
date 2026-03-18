@@ -1,7 +1,8 @@
 import React from "react";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
-import { ReportHeader, ReportFooter, PrintButton, BackButton } from "@/components/ReportComponents";
+import { ReportFooter, PrintButton, BackButton } from "@/components/ReportComponents";
+import type { Activity } from "@/types";
 import { redirect } from "next/navigation";
 
 export default async function CatkinReportPage(props: {
@@ -47,8 +48,8 @@ export default async function CatkinReportPage(props: {
     if (error) console.error('Catkin query error:', error);
 
     // Group activities by date
-    const groupedActivities: Record<string, any[]> = {};
-    (activities || []).forEach(act => {
+    const groupedActivities: Record<string, Activity[]> = {};
+    (activities || []).forEach((act: Activity) => {
         if (!groupedActivities[act.activity_date]) {
             groupedActivities[act.activity_date] = [];
         }
@@ -130,7 +131,7 @@ export default async function CatkinReportPage(props: {
                             const dateStr = new Date(date).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
                             return dateActivities.map((act, actIndex) => {
-                                const classNames = act.classes?.map((c: any) => c.class?.name).join(', ');
+                                const classNames = act.classes?.map((c) => c.class?.name).join(', ');
                                 return (
                                     <tr key={act.id} className={actIndex % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'}>
                                         {actIndex === 0 && (

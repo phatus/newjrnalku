@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { Trash2, Calendar, Clock, BookOpen, Briefcase, FileText, Pencil, MoreVertical, Users } from "lucide-react";
+import { Trash2, Calendar, Clock, Pencil, Users } from "lucide-react";
 import { deleteSchedule } from "./actions";
 import ScheduleForm from "@/components/ScheduleForm";
-import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from 'sonner';
 import type { Schedule, Category, ClassRoom, ImplementationBase } from "@/types";

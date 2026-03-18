@@ -6,7 +6,6 @@ import {
     Tag,
     AlignLeft,
     ExternalLink,
-    Users,
     Clock,
     BookOpen,
     Save,
@@ -14,14 +13,12 @@ import {
     AlertCircle,
     FileText,
     Briefcase,
-    GraduationCap,
     Target,
     Hash,
     Award
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { createActivity } from "@/app/activities/actions";
 import { toast } from 'sonner';
 import type { Category, ClassRoom, ImplementationBase, Activity } from "@/types";
 
@@ -46,7 +43,7 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (_e: React.FormEvent<HTMLFormElement>) => {
         setLoading(true);
         setErrors({});
     };
@@ -359,7 +356,7 @@ export default function ActivityForm({ categories, classes, bases, initialData, 
                         </div>
                         <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl mt-2 border border-blue-100">
                             <AlertCircle size={14} className="text-blue-500 mt-0.5 shrink-0" />
-                            <p className="text-[10px] text-blue-700 font-bold leading-relaxed">Pastikan pengaturan berbagi di Google Drive adalah "Siapa saja yang memiliki link".</p>
+                            <p className="text-[10px] text-blue-700 font-bold leading-relaxed">Pastikan pengaturan berbagi di Google Drive adalah &quot;Siapa saja yang memiliki link&quot;.</p>
                         </div>
                     </div>
 

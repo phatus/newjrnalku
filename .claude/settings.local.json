@@ -10,7 +10,14 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(tee eslint-errors.txt)",
+      "Bash(node -e \"const fs = require\\(''''fs''''\\); const data = JSON.parse\\(fs.readFileSync\\(''''/dev/stdin'''', ''''utf8''''\\)\\); const errors = data.filter\\(r => r.severity === 2\\); const warnings = data.filter\\(r => r.severity === 1\\); console.log\\(''''ERRORS:'''', errors.length\\); console.log\\(''''WARNINGS:'''', warnings.length\\); console.log\\(''''FILES:'''', new Set\\(errors.map\\(e => e.filePath\\)\\).size\\);\")",
+      "Bash(grep -E \"\\\\.\\(ts|tsx\\)$\")",
+      "Bash(for f:*)",
+      "Bash(do echo:*)",
+      "Bash(done)",
+      "Bash(npx lint-staged:*)"
     ]
   }
 }

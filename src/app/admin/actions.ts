@@ -3,7 +3,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 // --- Categories ---
 export async function createCategory(formData: FormData) {
@@ -186,9 +185,10 @@ export async function deleteUser(id: string) {
 
         revalidatePath('/admin/users')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Delete User Error:', error)
-        throw new Error(error.message || 'Gagal menghapus pengguna')
+        const err = error as { message?: string };
+        throw new Error(err.message || 'Gagal menghapus pengguna')
     }
 }
 
@@ -203,8 +203,9 @@ export async function updateUserPassword(id: string, password: string) {
         if (error) throw error
 
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Update Password Error:', error)
-        throw new Error(error.message || 'Gagal memperbarui password')
+        const err = error as { message?: string };
+        throw new Error(err.message || 'Gagal memperbarui password')
     }
 }

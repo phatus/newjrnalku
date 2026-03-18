@@ -3,7 +3,6 @@
 import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 
 export async function getSchedules(selectedDate?: string) {
     console.log('SERVER ACTION: getSchedules started', selectedDate)
@@ -275,7 +274,7 @@ export async function convertScheduleToActivity(
     if (activityError) throw activityError
 
     if (schedule.schedule_class_rooms && schedule.schedule_class_rooms.length > 0) {
-        const pivotData = schedule.schedule_class_rooms.map((p: any) => ({
+        const pivotData = schedule.schedule_class_rooms.map((p: { class_room_id: number }) => ({
             activity_id: activity.id,
             class_room_id: p.class_room_id
         }))

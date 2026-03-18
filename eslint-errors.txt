@@ -1,0 +1,191 @@
+
+D:\agus widi\belajar code\newjurnalku\src\app\activities\[id]\edit\page.tsx
+  12:10  error  'redirect' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\activities\actions.ts
+   26:94  error  'student_count' is assigned a value but never used                          @typescript-eslint/no-unused-vars
+  282:39  error  'formData' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\activities\schedule\ScheduleClient.tsx
+  4:35  error  'BookOpen' is defined but never used      @typescript-eslint/no-unused-vars
+  4:45  error  'Briefcase' is defined but never used     @typescript-eslint/no-unused-vars
+  4:56  error  'FileText' is defined but never used      @typescript-eslint/no-unused-vars
+  4:74  error  'MoreVertical' is defined but never used  @typescript-eslint/no-unused-vars
+  7:10  error  'cn' is defined but never used            @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\activities\schedule\actions.ts
+    6:10  error  'redirect' is defined but never used      @typescript-eslint/no-unused-vars
+  278:65  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\activities\schedule\page.tsx
+  2:23  error  'Trash2' is defined but never used     @typescript-eslint/no-unused-vars
+  2:31  error  'Calendar' is defined but never used   @typescript-eslint/no-unused-vars
+  2:41  error  'Clock' is defined but never used      @typescript-eslint/no-unused-vars
+  2:48  error  'BookOpen' is defined but never used   @typescript-eslint/no-unused-vars
+  2:58  error  'Briefcase' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\admin\actions.ts
+    6:10  error  'redirect' is defined but never used      @typescript-eslint/no-unused-vars
+  189:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\admin\users\UsersClient.tsx
+  4:66  error  'Mail' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\api\migrate-temp\route.ts
+  46:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\api\npsn\route.ts
+   64:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:22  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  156:22  error  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  178:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\auth\seed.ts
+  6:39  error  'formData' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\login\page.tsx
+  17:27  error  'e' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\master-data\actions.ts
+  76:23  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\master-data\bases\BasesClient.tsx
+  28:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\master-data\categories\CategoriesClient.tsx
+  35:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\master-data\classes\ClassesClient.tsx
+  28:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  42:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\onboarding\page.tsx
+  79:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\page.tsx
+   15:10  error  'createAdminClient' is defined but never used  @typescript-eslint/no-unused-vars
+   66:48  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  138:44  error  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\profile\page.tsx
+   3:5  error  'User' is defined but never used      @typescript-eslint/no-unused-vars
+   4:5  error  'Settings' is defined but never used  @typescript-eslint/no-unused-vars
+  16:5  error  'Award' is defined but never used     @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\register\page.tsx
+  17:27  error  'e' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\reports\ReportsClient.tsx
+   4:20  error  'Filter' is defined but never used        @typescript-eslint/no-unused-vars
+  14:71  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\reports\catkin\page.tsx
+    4:10  error  'ReportHeader' is defined but never used  @typescript-eslint/no-unused-vars
+   50:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:73  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\reports\jurnal\page.tsx
+    4:10  error  'ReportHeader' is defined but never used            @typescript-eslint/no-unused-vars
+  128:35  error  'fullMonthName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\reports\labul\page.tsx
+   4:10  error  'ReportHeader' is defined but never used  @typescript-eslint/no-unused-vars
+  52:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:50  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\reports\page.tsx
+  3:5  error  'FileText' is defined but never used        @typescript-eslint/no-unused-vars
+  7:5  error  'BookOpen' is defined but never used        @typescript-eslint/no-unused-vars
+  8:5  error  'ClipboardCheck' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\settings\page.tsx
+  24:11  error  'adminSupa' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\app\super-admin\[id]\page.tsx
+  110:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\app\super-admin\page.tsx
+  2:50  error  'ArrowRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\audit_schema.js
+  1:20  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\agus widi\belajar code\newjurnalku\src\audit_supabase.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\agus widi\belajar code\newjurnalku\src\components\ActivityForm.tsx
+    9:5    error  'Users' is defined but never used                                    @typescript-eslint/no-unused-vars
+   17:5    error  'GraduationCap' is defined but never used                            @typescript-eslint/no-unused-vars
+   24:10   error  'createActivity' is defined but never used                           @typescript-eslint/no-unused-vars
+   49:27   error  'e' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  362:147  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`      react/no-unescaped-entities
+  362:177  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`      react/no-unescaped-entities
+
+D:\agus widi\belajar code\newjurnalku\src\components\ClientLayout.tsx
+  21:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+D:\agus widi\belajar code\newjurnalku\src\components\ClientLayout.tsx:21:9
+  19 |     // Load saved state from localStorage on mount
+  20 |     useEffect(() => {
+> 21 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |         const saved = localStorage.getItem("sidebar_collapsed");
+  23 |         if (saved) {
+  24 |             setIsCollapsed(saved === "true");  react-hooks/set-state-in-effect
+
+D:\agus widi\belajar code\newjurnalku\src\components\DashboardDateFilter.tsx
+  6:10  error  'cn' is defined but never used  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\components\ProfileAvatar.tsx
+   4:10  error    'Camera' is defined but never used                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   4:27  error    'User' is defined but never used                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   4:33  error    'MoreVertical' is defined but never used                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  61:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  81:25  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                 @typescript-eslint/no-explicit-any
+  95:17  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\agus widi\belajar code\newjurnalku\src\components\ReportComponents.tsx
+  5:31  error  'label' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+D:\agus widi\belajar code\newjurnalku\src\components\ScheduleForm.tsx
+    4:16  error  'Tag' is defined but never used                  @typescript-eslint/no-unused-vars
+    4:21  error  'AlignLeft' is defined but never used            @typescript-eslint/no-unused-vars
+    4:32  error  'Briefcase' is defined but never used            @typescript-eslint/no-unused-vars
+    4:43  error  'Users' is defined but never used                @typescript-eslint/no-unused-vars
+    4:50  error  'Clock' is defined but never used                @typescript-eslint/no-unused-vars
+    4:57  error  'BookOpen' is defined but never used             @typescript-eslint/no-unused-vars
+   57:11  error  'isTeaching' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  105:39  error  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\components\ScheduleQuickAction.tsx
+   60:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+D:\agus widi\belajar code\newjurnalku\src\components\UserIdentity.tsx
+  27:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+D:\agus widi\belajar code\newjurnalku\src\diag.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\agus widi\belajar code\newjurnalku\src\diag_file.js
+  1:26  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+  2:12  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\agus widi\belajar code\newjurnalku\src\diag_v2.js
+  1:20  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
+
+D:\agus widi\belajar code\newjurnalku\src\utils\supabase\server.ts
+  18:30  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+  27:30  error  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+✖ 91 problems (89 errors, 2 warnings)
+

@@ -1,7 +1,8 @@
 import React from "react";
 import { createClient } from "@/utils/supabase/server";
 import { createAdminClient } from "@/utils/supabase/admin";
-import { ReportHeader, ReportFooter, PrintButton, BackButton } from "@/components/ReportComponents";
+import { ReportFooter, PrintButton, BackButton } from "@/components/ReportComponents";
+import type { Activity } from "@/types";
 import { redirect } from "next/navigation";
 
 export default async function LabulReportPage(props: {
@@ -49,7 +50,7 @@ export default async function LabulReportPage(props: {
         evidences: Set<string>
     }> = {};
 
-    (activities || []).forEach((act: any) => {
+    (activities || []).forEach((act: Activity) => {
         const rhk = act.category?.rhk_label || "Lain-lain";
 
         // For teaching activities, add prefix and use topic (Nama Pelajaran)
@@ -58,7 +59,7 @@ export default async function LabulReportPage(props: {
 
         // Add classes if available
         if (act.classes && act.classes.length > 0) {
-            const clsNames = act.classes.map((c: any) => c.class?.name).filter((name: string) => name).sort().join(', ');
+            const clsNames = act.classes?.map((c) => c.class?.name).filter((name): name is string => !!name).sort().join(', ') || '';
             if (clsNames) displayDesc = `${displayDesc} (Kls: ${clsNames})`;
         }
 

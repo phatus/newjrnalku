@@ -1,7 +1,7 @@
 import React from "react";
 import { createAdminClient } from "@/utils/supabase/admin";
 import { createClient } from "@/utils/supabase/server";
-import { ReportHeader, ReportFooter, PrintButton, BackButton } from "@/components/ReportComponents";
+import { ReportFooter, PrintButton, BackButton } from "@/components/ReportComponents";
 import { redirect } from "next/navigation";
 import type { Activity } from "@/types";
 
@@ -125,7 +125,6 @@ export default async function JurnalReportPage(props: {
                             const day = dateObj.getDate().toString().padStart(2, '0');
                             const monthIndex = dateObj.getMonth();
                             const yearNum = dateObj.getFullYear();
-                            const fullMonthName = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"][monthIndex];
 
                             const dateStr = `${day}/${String(monthIndex + 1).padStart(2, '0')}/${yearNum}`;
                             const classNames = act.classes?.map((c) => c.class?.name).join(', ');

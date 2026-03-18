@@ -57,9 +57,10 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
                 setMateri('')
                 setCapaian('')
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Failed to confirm schedule:', error)
-            toast.error(error.message || 'Gagal mencatat kegiatan. Silakan coba lagi.')
+            const err = error as { message?: string };
+            toast.error(err.message || 'Gagal mencatat kegiatan. Silakan coba lagi.')
         } finally {
             setLoading(null)
         }
@@ -101,7 +102,7 @@ export default function ScheduleQuickAction({ initialSchedules, selectedDate }: 
                 {todaySchedules.map((item) => {
                     const isDone = completed.includes(item.id)
                     const isKBM = item.report_categories?.is_teaching === true
-                    const classNames = item.schedule_class_rooms?.map((p: any) => p.class_rooms?.name).filter(Boolean).join(', ');
+                    const classNames = item.schedule_class_rooms?.map((p) => p.class_rooms?.name).filter(Boolean).join(', ');
                     const isExpanded = isInputting === item.id
 
                     return (
