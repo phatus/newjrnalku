@@ -46,8 +46,8 @@ export default function ScheduleClient({ schedules, categories, classes, bases }
         }
     };
 
-    const handleDelete = async (id: number, topic: string) => {
-        if (!confirm(`Hapus jadwal "${topic}"?`)) return;
+    const handleDelete = async (id: number, topic: string | null | undefined) => {
+        if (!confirm(`Hapus jadwal "${topic ?? 'tanpa judul'}"?`)) return;
 
         console.log("DEBUG: Deleting schedule", id);
         startTransition(async () => {
