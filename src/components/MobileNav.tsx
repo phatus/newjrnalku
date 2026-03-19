@@ -3,12 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, BarChart2, User as UserIcon, PlusCircle } from "lucide-react";
+import { Home, ClipboardList, BarChart2, User as UserIcon, PlusCircle, CalendarOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
     { name: "Beranda", href: "/", icon: Home },
     { name: "Kegiatan", href: "/activities", icon: ClipboardList },
+    { name: "Hari Libur", href: "/activities/holidays", icon: CalendarOff },
     { name: "Tambah", href: "/activities/create", icon: PlusCircle, isSpecial: true },
     { name: "Laporan", href: "/reports", icon: BarChart2 },
     { name: "Profil", href: "/profile", icon: UserIcon },

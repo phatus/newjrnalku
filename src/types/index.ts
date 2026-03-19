@@ -144,6 +144,17 @@ export type AppSchedule = {
   updated_at?: string;
 };
 
+export type AppHoliday = {
+  id: number;
+  holiday_date: string;
+  name: string;
+  description?: string | null;
+  is_national: boolean;
+  created_by?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 // Backward-compatible aliases (use these in your code)
 export type User = AppUser;
 export type Profile = AppProfile;
@@ -156,3 +167,4 @@ export type ActivityClassRoom = AppActivityClassRoom;
 export type DashboardStats = AppDashboardStats;
 export type MonthlyStats = AppMonthlyStats;
 export type Schedule = AppSchedule;
+export type Holiday = AppHoliday;

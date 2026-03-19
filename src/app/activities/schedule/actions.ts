@@ -4,6 +4,22 @@ import { createClient } from '@/utils/supabase/server'
 import { createAdminClient } from '@/utils/supabase/admin'
 import { revalidatePath } from 'next/cache'
 
+export async function getHolidays() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from('holidays')
+    .select('*')
+    .order('holiday_date', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching holidays:', error);
+    return { data: null, error: error.message };
+  }
+
+  return { data, error: null };
+}
+
 export async function getSchedules(selectedDate?: string) {
     console.log('SERVER ACTION: getSchedules started', selectedDate)
     const supabase = await createClient()

@@ -17,7 +17,8 @@
       "Bash(for f:*)",
       "Bash(do echo:*)",
       "Bash(done)",
-      "Bash(npx lint-staged:*)"
+      "Bash(npx lint-staged:*)",
+      "Bash(dos2unix \"src/app/activities/schedule/ScheduleClient.tsx\")"
     ]
   }
 }

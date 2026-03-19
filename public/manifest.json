@@ -1,6 +1,6 @@
 {
     "name": "newjurnalku",
-    "short_name": "newjurnalku",
+    "short_name": "NJK",
     "description": "Aplikasi pencatatan jurnal mengajar dan laporan kinerja guru.",
     "start_url": "/",
     "display": "standalone",
@@ -8,7 +8,7 @@
     "theme_color": "#f59e0b",
     "icons": [
         {
-            "src": "/next.svg",
+            "src": "/njk.svg",
             "sizes": "any",
             "type": "image/svg+xml"
         }

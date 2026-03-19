@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, ClipboardList, BarChart2, User as UserIcon, PlusCircle, LogOut, Settings, Shield, Database, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, ClipboardList, BarChart2, User as UserIcon, PlusCircle, LogOut, Settings, Shield, Database, Globe, ChevronLeft, ChevronRight, CalendarOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/auth/actions";
 import { APP_VERSION_LABEL } from "@/lib/version";
@@ -13,6 +13,7 @@ const navItems = [
     { name: "Beranda", href: "/", icon: Home },
     { name: "Kegiatan Harian", href: "/activities", icon: ClipboardList },
     { name: "Kelola Jadwal", href: "/activities/schedule", icon: Settings },
+    { name: "Hari Libur", href: "/activities/holidays", icon: CalendarOff },
     { name: "Pusat Laporan", href: "/reports", icon: BarChart2 },
     { name: "Data Master", href: "/master-data", icon: Database },
     { name: "Profil Saya", href: "/profile", icon: UserIcon },
